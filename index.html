@@ -19,7 +19,37 @@
     <div id="gameDiv"> </div>
     <script>
         (function() {
-            var game = new Phaser.Game(960, 640, Phaser.CANVAS, 'game');
+            var w = window.innerWidth * window.devicePixelRatio,
+                h = window.innerHeight * window.devicePixelRatio,
+                width = (h > w) ? h : w,
+                height = (h > w) ? w : h;
+
+            if (window.innerWidth >= 1024 && window.devicePixelRatio >= 2) {
+                width = Math.round(width / 2);
+                height = Math.round(height / 2);
+            }
+
+            if (window.devicePixelRatio === 3) {
+                width = Math.round(width / 3) * 2;
+                height = Math.round(height / 3) * 2;
+            }
+
+            KickShot.deviceWidth = width;
+            KickShot.deviceHeight = height;
+            KickShot.deviceRatio = KickShot.deviceWidth / KickShot.deviceHeight;
+            KickShot.worldWidth = 960;
+            KickShot.worldHeight = 640;
+            KickShot.worldRatio = KickShot.worldWidth / KickShot.worldHeight;
+
+            if (KickShot.worldRatio > KickShot.deviceRatio) {
+                KickShot.scaleWidth = KickShot.worldWidth;
+                KickShot.scaleHeight = KickShot.worldWidth * KickShot.deviceRatio;
+            } else {
+                KickShot.scaleWidth = KickShot.worldHeight * KickShot.deviceRatio;
+                KickShot.scaleHeight = KickShot.worldHeight;
+            }
+
+            var game = new Phaser.Game(KickShot.scaleWidth, KickShot.scaleHeight, Phaser.CANVAS, 'game');
             game.state.add('Boot', KickShot.Boot);
             game.state.add('Preload', KickShot.Preload);
             game.state.add('Menu', KickShot.Menu);
