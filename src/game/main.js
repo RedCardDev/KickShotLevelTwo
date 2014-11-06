@@ -165,24 +165,21 @@ game.createScene('Game', {
 
         var newpos = game.system.height * 0.5;
         if (this.chipZone > 0) {
-            newpos += 8 + this.chipZone * 38.5;
+            newpos += 28 + (this.chipZone - 1) * 38.5;
         } else if (this.chipZone < 0) {
-            newpos += -8 + this.chipZone * 38.5;
+            newpos += -28 - (this.chipZone - 1) * 38.5;
         }
 
-        if (this.chipZone == 12 || this.chipZone == -12) {
-            this.scoreGoal();
-        } else {
-            this.addTween(this.chip, {y: newpos}, 500, {
-                easing: game.Tween.Easing.Quadratic.InOut,
-                onComplete: function() {
-                    if (self.chipZone == 1 || self.chipZone == -12) {
-                        self.scoreGoal();
-                    }
+        this.addTween(this.chip, {y: newpos}, 500, {
+            easing: game.Tween.Easing.Quadratic.InOut,
+            onComplete: function() {
+                if (self.chipZone == 12 || self.chipZone == -12) {
+                    self.scoreGoal();
+                } else {
                     self.endTurn();
                 }
-            }).start();
-        }
+            }
+        }).start();
     },
 
     endTurn: function() {
