@@ -17,23 +17,45 @@ game.createScene('Main', {
     backgroundColor: 0xb9bec7,
     title: null,
 
+    playButton: null,
+    webButton: null,
+
     init: function() {
         this.title = new game.Sprite('title').addTo(this.stage);
         this.title.x = game.system.width / 2 - this.title.width / 2 + 10;
-        this.title.y = -this.title.height;
+        this.title.y = -game.system.height / 4;
 
-        this.addTween(this.title, {y: 130}, 800, {delay: 100, easing: game.Tween.Easing.Back.Out}).start();
+        this.playButton = new game.Sprite('play').addTo(this.stage);
+        this.playButton.anchor.set(0.5, 0.5);
+        this.playButton.x = -200;
+        this.playButton.y = game.system.height / 2 + 350;
+        this.playButton.interactive = true;
+        this.playButton.click = this.playClick.bind(this);
+
+        this.webButton = new game.Sprite('web').addTo(this.stage);
+        this.webButton.anchor.set(0.5, 0.5);
+        this.webButton.x = game.system.width + 200;
+        this.webButton.y = game.system.height / 2 + 350;
+        this.webButton.interactive = true;
+        this.webButton.click = this.webClick.bind(this);
+
+        this.addTween(this.title, {y: 80}, 800, {delay: 100, easing: game.Tween.Easing.Back.Out}).start();
+        this.addTween(this.playButton, {x: game.system.width/2 - 150}, 800, {delay: 300, easing: game.Tween.Easing.Quadratic.Out}).start();
+        this.addTween(this.webButton, {x: game.system.width/2 + 150}, 800, {delay: 300, easing: game.Tween.Easing.Quadratic.Out}).start();
     },
 
-    mouseup: function() {
-        var self = this;
-        this.addTween(this.title, {y: -this.title.height}, 400,
-            {   delay: 50,
-                easing: game.Tween.Easing.Back.In,
-                onComplete: function() {
-                    game.system.setScene('Game');
-                }
-            }).start();
+    playClick: function() {
+        this.addTween(this.title, {y: -this.title.height}, 400, {delay: 50, easing: game.Tween.Easing.Back.In}).start();
+        this.addTween(this.playButton, {x: -200}, 400,
+            {delay: 250, easing: game.Tween.Easing.Back.In,
+             onComplete: function() {
+                 game.system.setScene('Game');
+             }}).start();
+        this.addTween(this.webButton, {x: game.system.width + 200}, 400, {delay: 250, easing: game.Tween.Easing.Back.In}).start();
+    },
+
+    webClick: function() {
+        // TODO: use CocoonJS extension Cocoon.App.openURL("target_url")
     }
 });
 
@@ -136,11 +158,23 @@ game.createScene('Game', {
             self.addTimer(250, function() {
                 if (self.dice.value1 === self.dice.value2) {
                     // doubles? turn over
-                    self.changePossession();
+                    if (self.chipZone == 12 || self.chipZone == -12) {
+                        self.blockGoal();
+                    } else {
+                        self.changePossession();
+                    }
                 } else if (self.turn === self.possession) {
-                    self.advanceToken();
+                    if (self.chipZone == 12 || self.chipZone == -12) {
+                        self.scoreGoal();
+                    } else {
+                        self.advanceToken();
+                    }
                 } else {
-                    self.endTurn();
+                    if (self.chipZone == 12 || self.chipZone == -12) {
+                        self.scoreGoal();
+                    } else {
+                        self.endTurn();
+                    }
                 }
             });
         });
@@ -155,9 +189,28 @@ game.createScene('Game', {
         this.endTurn();
     },
 
+    blockGoal: function() {
+        var self = this;
+        // TODO: show goal block message here
+
+        this.possession = !this.possession;
+        this.chip.setTexture(this.possession == game.HUMAN ? 'chip-home' : 'chip-away');
+
+        // same player rolls again on block
+        this.addTimer(500, function() {
+            if (self.turn == game.HUMAN) {
+                self.enableInput();
+            } else {
+                self.rollDice();
+            }
+        });
+    },
+
     advanceToken: function() {
         var self = this;
         var move = Math.max(this.dice.value1, this.dice.value2);
+
+        // AI territory < 0, Human territory > 0
 
         this.chipZone += (this.possession == game.HUMAN) ? -move : move;
         if (this.chipZone > 12) { this.chipZone = 12; }
@@ -167,19 +220,25 @@ game.createScene('Game', {
         if (this.chipZone > 0) {
             newpos += 28 + (this.chipZone - 1) * 38.5;
         } else if (this.chipZone < 0) {
-            newpos += -28 - (this.chipZone - 1) * 38.5;
+            newpos += -28 + (this.chipZone + 1) * 38.5;
         }
 
         this.addTween(this.chip, {y: newpos}, 500, {
             easing: game.Tween.Easing.Quadratic.InOut,
             onComplete: function() {
                 if (self.chipZone == 12 || self.chipZone == -12) {
-                    self.scoreGoal();
+                    self.goalShot();
                 } else {
                     self.endTurn();
                 }
             }
         }).start();
+    },
+
+    goalShot: function() {
+        // TODO: show goal shot message here
+
+        this.endTurn();
     },
 
     endTurn: function() {
@@ -198,7 +257,6 @@ game.createScene('Game', {
 
         var kickOffPlayer = false;
         if (this.chipZone == 12) {
-            // ai score
             game.AiScore += 1;
             kickOffPlayer = game.HUMAN;
         }
@@ -206,18 +264,18 @@ game.createScene('Game', {
             game.HumanScore += 1;
             kickOffPlayer = game.AI;
         }
-        this.chipZone = 0;
-        this.chip.y = game.system.height * 0.5;
 
         this.hideDice();
         this.addTimer(1000, function() {
+            self.chipZone = 0;
+            self.chip.y = game.system.height * 0.5;
             self.turn = kickOffPlayer;
-            if (kickOffPlayer == game.Human) {
-                self.setPlayerPosition();
+            if (kickOffPlayer == game.HUMAN) {
+                self.dice.setPlayerPosition();
                 self.possession = game.HUMAN;
                 self.chip.setTexture('chip-home');
             } else {
-                self.setAiPosition();
+                self.dice.setAiPosition();
                 self.possession = game.AI;
                 self.chip.setTexture('chip-away');
             }
