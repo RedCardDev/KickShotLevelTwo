@@ -21,4 +21,13 @@ game.addAsset('images/dice4.png', 'dice4');
 game.addAsset('images/dice5.png', 'dice5');
 game.addAsset('images/dice6.png', 'dice6');
 
+game.addAsset('images/home_goal.gif', "Goal_home");
+game.addAsset('images/computer_goal.gif', "Goal_away");
+game.addAsset('images/block_home.gif', "GoalBlock_home");
+game.addAsset('images/block_away.gif', "GoalBlock_away");
+game.addAsset('images/intercept_home.gif', "Intercept_home");
+game.addAsset('images/intercept_away.gif', "Intercept_away");
+game.addAsset('images/shot_home.gif', "GoalShot_home");
+game.addAsset('images/shot_away.gif', "GoalShot_away");
+
 });

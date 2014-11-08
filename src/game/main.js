@@ -63,8 +63,12 @@ game.createScene('Game', {
     backgroundColor: 0xb9bec7,
 
     dice: null,
+    message: null,
 
     canTap: false,
+    inMessage: false,
+    afterMessage: null,
+
     turn: game.HUMAN,
     possession: game.HUMAN,
 
@@ -73,7 +77,7 @@ game.createScene('Game', {
 
     init: function() {
         var self = this;
-        var field = new game.Sprite('field').addTo(this.stage);
+        field = new game.Sprite('field').addTo(this.stage);
         field.x = 0;
         field.y = -field.height;
         this.addTween(field, {y: 0}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
@@ -86,11 +90,18 @@ game.createScene('Game', {
         this.addTween(this.chip, {y: game.system.height / 2}, 600,
             {delay: 400, easing: game.Tween.Easing.Quadratic.Out,
              onComplete: function() {
-                 self.dice = new game.Dice();
                  self.addObject(self.dice);
                  self.showDice();
              }
             }).start();
+
+        this.dice = new game.Dice();
+
+        this.message = new game.Sprite('Intercept_home').addTo(this.stage);
+        this.message.anchor.set(0.5, 0.5);
+        this.message.center();
+        this.message.y = -game.system.height / 2;
+        this.afterMessage = this.hideMessage.bind(this);
 
         game.HumanScore = 0;
         game.AiScore = 0;
@@ -106,6 +117,11 @@ game.createScene('Game', {
 
     mouseup: function() {
         if (!this.canTap) { return; }
+
+        if (this.inMessage) {
+            this.hideMessage(this.afterMessage);
+            return;
+        }
 
         if (this.turn == game.HUMAN) {
             this.rollDice();
@@ -158,13 +174,15 @@ game.createScene('Game', {
             self.addTimer(250, function() {
                 if (self.dice.value1 === self.dice.value2) {
                     // doubles? turn over
-                    if (self.chipZone == 12 || self.chipZone == -12) {
+                    if ((self.chipZone == 12 || self.chipZone == -12) &&
+                        self.possession != self.turn) {
                         self.blockGoal();
                     } else {
                         self.changePossession();
                     }
                 } else if (self.turn === self.possession) {
-                    if (self.chipZone == 12 || self.chipZone == -12) {
+                    if ((self.chipZone == 12  && self.possession == game.AI) ||
+                        (self.chipZone == -12 && self.possession == game.HUMAN) {
                         self.scoreGoal();
                     } else {
                         self.advanceToken();
@@ -182,27 +200,27 @@ game.createScene('Game', {
 
     changePossession: function() {
         var self = this;
-        // TODO: show interception message here
-
-        this.possession = !this.possession;
-        this.chip.setTexture(this.possession == game.HUMAN ? 'chip-home' : 'chip-away');
-        this.endTurn();
+        this.showMessage('Intercept', function() {
+            self.possession = !self.possession;
+            self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
+            self.endTurn();
+        });
     },
 
     blockGoal: function() {
         var self = this;
-        // TODO: show goal block message here
+        this.showMessage('GoalBlock', function() {
+            self.possession = !self.possession;
+            self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
 
-        this.possession = !this.possession;
-        this.chip.setTexture(this.possession == game.HUMAN ? 'chip-home' : 'chip-away');
-
-        // same player rolls again on block
-        this.addTimer(500, function() {
-            if (self.turn == game.HUMAN) {
-                self.enableInput();
-            } else {
-                self.rollDice();
-            }
+            // same player rolls again on block
+            self.addTimer(500, function() {
+                if (self.turn == game.HUMAN) {
+                    self.enableInput();
+                } else {
+                    self.rollDice();
+                }
+            });
         });
     },
 
@@ -236,9 +254,7 @@ game.createScene('Game', {
     },
 
     goalShot: function() {
-        // TODO: show goal shot message here
-
-        this.endTurn();
+        this.showMessage('GoalShot', this.endTurn.bind(this));
     },
 
     endTurn: function() {
@@ -253,34 +269,57 @@ game.createScene('Game', {
 
     scoreGoal: function() {
         var self = this;
-        // TODO: show goal score message here
 
-        var kickOffPlayer = false;
-        if (this.chipZone == 12) {
-            game.AiScore += 1;
-            kickOffPlayer = game.HUMAN;
-        }
-        if (this.chipZone == -12) {
-            game.HumanScore += 1;
-            kickOffPlayer = game.AI;
-        }
-
-        this.hideDice();
-        this.addTimer(1000, function() {
-            self.chipZone = 0;
-            self.chip.y = game.system.height * 0.5;
-            self.turn = kickOffPlayer;
-            if (kickOffPlayer == game.HUMAN) {
-                self.dice.setPlayerPosition();
-                self.possession = game.HUMAN;
-                self.chip.setTexture('chip-home');
-            } else {
-                self.dice.setAiPosition();
-                self.possession = game.AI;
-                self.chip.setTexture('chip-away');
+        this.showMessage('Goal', function() {
+            var kickOffPlayer = false;
+            if (self.chipZone == 12) {
+                game.AiScore += 1;
+                kickOffPlayer = game.HUMAN;
             }
-            self.showDice();
+            if (self.chipZone == -12) {
+                game.HumanScore += 1;
+                kickOffPlayer = game.AI;
+            }
+
+            self.hideDice();
+            self.addTimer(1000, function() {
+                self.chipZone = 0;
+                self.chip.y = game.system.height * 0.5;
+                self.turn = kickOffPlayer;
+                if (kickOffPlayer == game.HUMAN) {
+                    self.dice.setPlayerPosition();
+                    self.possession = game.HUMAN;
+                    self.chip.setTexture('chip-home');
+                } else {
+                    self.dice.setAiPosition();
+                    self.possession = game.AI;
+                    self.chip.setTexture('chip-away');
+                }
+                self.showDice();
+            });
         });
+    },
+
+    showMessage: function(msgType, after) {
+        var self = this;
+        this.afterMessage = after;
+        this.message.setTexture(msgType + (this.possession ? "_home" : "_away"));
+        this.addTween(this.message, {y: game.system.height/2}, 500, {
+            easing: game.Tween.Easing.Back.Out,
+            onComplete: function() {
+                self.enableInput();
+                self.inMessage = true;
+            }
+        }).start();
+    },
+
+    hideMessage: function(after) {
+        this.disableInput();
+        this.inMessage = false;
+        this.addTween(this.message, {y: -game.system.height/2}, 500, {
+            easing: game.Tween.Easing.Back.In,
+            onComplete: after
+        }).start();
     }
 });
 
