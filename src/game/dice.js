@@ -57,6 +57,13 @@ game.createClass('Dice', {
     setAiPosition: function() {
         this.die1.y = 100;
         this.die2.y = 200;
+    },
+
+    reset: function() {
+        this.value1 = 1;
+        this.value2 = 1;
+        this.die1.setTexture('dice1');
+        this.die2.setTexture('dice1');
     }
 });
 

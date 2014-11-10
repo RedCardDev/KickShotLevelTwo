@@ -30,14 +30,14 @@ game.createScene('Main', {
         this.playButton.x = -200;
         this.playButton.y = game.system.height / 2 + 350;
         this.playButton.interactive = true;
-        this.playButton.click = this.playClick.bind(this);
+        this.playButton.click = this.playButton.tap = this.playClick.bind(this);
 
         this.webButton = new game.Sprite('web').addTo(this.stage);
         this.webButton.anchor.set(0.5, 0.5);
         this.webButton.x = game.system.width + 200;
         this.webButton.y = game.system.height / 2 + 350;
         this.webButton.interactive = true;
-        this.webButton.click = this.webClick.bind(this);
+        this.webButton.click = this.webButton.tap = this.webClick.bind(this);
 
         this.addTween(this.title, {y: 80}, 800, {delay: 100, easing: game.Tween.Easing.Back.Out}).start();
         this.addTween(this.playButton, {x: game.system.width/2 - 150}, 800, {delay: 300, easing: game.Tween.Easing.Quadratic.Out}).start();
@@ -182,7 +182,7 @@ game.createScene('Game', {
                     }
                 } else if (self.turn === self.possession) {
                     if ((self.chipZone == 12  && self.possession == game.AI) ||
-                        (self.chipZone == -12 && self.possession == game.HUMAN) {
+                        (self.chipZone == -12 && self.possession == game.HUMAN)) {
                         self.scoreGoal();
                     } else {
                         self.advanceToken();
@@ -304,6 +304,7 @@ game.createScene('Game', {
         var self = this;
         this.afterMessage = after;
         this.message.setTexture(msgType + (this.possession ? "_home" : "_away"));
+
         this.addTween(this.message, {y: game.system.height/2}, 500, {
             easing: game.Tween.Easing.Back.Out,
             onComplete: function() {
