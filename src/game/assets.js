@@ -30,4 +30,6 @@ game.addAsset('images/intercept_away.gif', "Intercept_away");
 game.addAsset('images/shot_home.gif', "GoalShot_home");
 game.addAsset('images/shot_away.gif', "GoalShot_away");
 
+game.addAsset('fonts/foo.fnt');
+
 });

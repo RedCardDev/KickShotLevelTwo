@@ -64,6 +64,8 @@ game.createScene('Game', {
 
     dice: null,
     message: null,
+    aiScoreText: null,
+    humanScoreText: null,
 
     canTap: false,
     inMessage: false,
@@ -96,6 +98,13 @@ game.createScene('Game', {
             }).start();
 
         this.dice = new game.Dice();
+
+        this.aiScoreText = new game.BitmapText('AI: 0', { font: 'Foo' }).addTo(this.stage);
+        this.aiScoreText.position.set(500, -game.system.height + 40);
+        this.humanScoreText = new game.BitmapText('YOU: 0', { font: 'Foo' }).addTo(this.stage);
+        this.humanScoreText.position.set(465, -110);
+        this.addTween(this.aiScoreText, {y: 40}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
+        this.addTween(this.humanScoreText, {y: 850}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
 
         this.message = new game.Sprite('Intercept_home').addTo(this.stage);
         this.message.anchor.set(0.5, 0.5);
@@ -271,6 +280,11 @@ game.createScene('Game', {
         var self = this;
 
         this.showMessage('Goal', function() {
+            if (game.AiScore == 5 || game.HumanScore == 5) {
+                self.showMessage('End', self.gameOver.bind(self));
+                return;
+            }
+
             var kickOffPlayer = false;
             if (self.chipZone == 12) {
                 game.AiScore += 1;
@@ -280,6 +294,7 @@ game.createScene('Game', {
                 game.HumanScore += 1;
                 kickOffPlayer = game.AI;
             }
+            self.updateScore();
 
             self.hideDice();
             self.addTimer(1000, function() {
@@ -321,6 +336,27 @@ game.createScene('Game', {
             easing: game.Tween.Easing.Back.In,
             onComplete: after
         }).start();
+    },
+
+    gameOver: function() {
+        var self = this;
+        this.hideDice();
+        this.addTimer(1000, function() {
+            self.chipZone = 0;
+            self.chip.y = game.system.height * 0.5;
+            self.turn = game.HUMAN;
+            self.dice.setPlayerPosition();
+            self.possession = game.HUMAN;
+            self.chip.setTexture('chip-home');
+            game.HumanScore = 0;
+            game.AiScore = 0;
+            self.updateScore();
+        });
+    },
+
+    updateScore: function() {
+        this.humanScoreText.setText('You: ' + game.HumanScore);
+        this.aiScoreText.setText('AI: ' + game.AiScore);
     }
 });
 
