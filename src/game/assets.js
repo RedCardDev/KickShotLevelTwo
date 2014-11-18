@@ -2,6 +2,14 @@ game.module(
     'game.assets'
 ).body(function() {
 
+game.addAsset('images/AndrewRacoon.png', 'racoon');
+game.addAsset('images/JamesRabbit.png', 'hare');
+game.addAsset('images/LeonardoJaguar.png', 'jaguar');
+game.addAsset('images/NataliaWeasel.png', 'weasel');
+game.addAsset('images/PierreLion.png', 'lion');
+game.addAsset('images/WindsorDog.png', 'dog');
+game.addAsset('images/XavierCrocodile.png', 'crocodile');
+
 game.addAsset('images/blank_field.png', 'field');
 game.addAsset('images/ballchiphome.png', 'chip-home');
 game.addAsset('images/ballchipaway.png', 'chip-away');
