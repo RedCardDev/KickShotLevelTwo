@@ -12,6 +12,7 @@ game.HUMAN = true;
 game.AI = false;
 game.HumanScore = 0;
 game.AiScore = 0;
+game.MaxScore = 5;
 
 game.createScene('Main', {
     backgroundColor: 0x629dc5,
@@ -317,17 +318,12 @@ game.createScene('Game', {
         var self = this;
 
         if (self.chipZone == 12) {
-            game.audio.playSound('boo');
+            //game.audio.playSound('boo');
         } else {
-            game.audio.playSound('cheer');
+            //game.audio.playSound('cheer');
         }
 
         this.showMessage('Goal', function() {
-            if (game.AiScore == 5 || game.HumanScore == 5) {
-                self.showMessage('End', self.gameOver.bind(self));
-                return;
-            }
-
             var kickOffPlayer = false;
             if (self.chipZone == 12) {
                 game.AiScore += 1;
@@ -338,6 +334,11 @@ game.createScene('Game', {
                 kickOffPlayer = game.AI;
             }
             self.updateScore();
+
+            if (game.AiScore == game.MaxScore || game.HumanScore == game.MaxScore) {
+                self.showMessage('End', self.gameOver.bind(self));
+                return;
+            }
 
             self.hideDice();
             self.addTimer(1000, function() {
@@ -394,6 +395,7 @@ game.createScene('Game', {
             game.HumanScore = 0;
             game.AiScore = 0;
             self.updateScore();
+            self.showDice();
         });
     },
 

@@ -21,8 +21,8 @@ game.createClass('Dice', {
         if (this.rolling && !this.timing) {
             var self = this;
             this.timing = true;
-            this.value1 = ~~Math.randomBetween(1, 6);
-            this.value2 = ~~Math.randomBetween(1, 6);
+            this.value1 = ~~Math.randomBetween(1, 7);
+            this.value2 = ~~Math.randomBetween(1, 7);
             this.die1.setTexture('dice' + this.value1);
             this.die2.setTexture('dice' + this.value2);
             game.scene.addTimer(100, function() {

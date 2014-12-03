@@ -37,6 +37,8 @@ game.addAsset('images/intercept_home.gif', "Intercept_home");
 game.addAsset('images/intercept_away.gif', "Intercept_away");
 game.addAsset('images/shot_home.gif', "GoalShot_home");
 game.addAsset('images/shot_away.gif', "GoalShot_away");
+game.addAsset('images/human_win.png', "End_home");
+game.addAsset('images/computer_win.png', "End_away");
 
 game.addAsset('fonts/foo.fnt');
 
