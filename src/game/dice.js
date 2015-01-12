@@ -32,8 +32,8 @@ game.createClass('Dice', {
     },
 
     show: function() {
-        game.scene.addTween(this.die1, {x: 100}, 500, { easing: game.Tween.Easing.Back.Out }).start();
-        game.scene.addTween(this.die2, {x: 100}, 500, { easing: game.Tween.Easing.Back.Out }).start();
+        game.scene.addTween(this.die1, {x: 150}, 500, { easing: game.Tween.Easing.Back.Out }).start();
+        game.scene.addTween(this.die2, {x: 150}, 500, { easing: game.Tween.Easing.Back.Out }).start();
     },
 
     hide: function() {
@@ -55,8 +55,8 @@ game.createClass('Dice', {
     },
 
     setAiPosition: function() {
-        this.die1.y = 100;
-        this.die2.y = 200;
+        this.die1.y = 175;
+        this.die2.y = 275;
     },
 
     reset: function() {

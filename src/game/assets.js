@@ -10,7 +10,7 @@ game.addAsset('images/PierreLion.png', 'lion');
 game.addAsset('images/WindsorDog.png', 'dog');
 game.addAsset('images/XavierCrocodile.png', 'crocodile');
 
-game.addAsset('images/blank_field.png', 'field');
+game.addAsset('images/board.png', 'field');
 game.addAsset('images/ballchiphome.png', 'chip-home');
 game.addAsset('images/ballchipaway.png', 'chip-away');
 game.addAsset('images/kickshotbig.png', 'title');
@@ -21,6 +21,7 @@ game.addAsset('images/Network-Earth-128.png', 'web');
 game.addAsset('images/Network-Earth-128-click.png', 'web-click');
 game.addAsset('images/Help-128.png', 'help');
 game.addAsset('images/Help-128-click.png', 'help-click');
+game.addAsset('images/Close-128.png', 'close');
 
 game.addAsset('images/dice1.png', 'dice1');
 game.addAsset('images/dice2.png', 'dice2');
@@ -39,6 +40,8 @@ game.addAsset('images/shot_home.gif', "GoalShot_home");
 game.addAsset('images/shot_away.gif', "GoalShot_away");
 game.addAsset('images/human_win.png', "End_home");
 game.addAsset('images/computer_win.png', "End_away");
+
+game.addAsset('images/rules_level_one.png', "rules");
 
 game.addAsset('fonts/foo.fnt');
 

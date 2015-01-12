@@ -115,19 +115,25 @@ game.createScene('Game', {
     chip: null,
     chipZone: 0,
 
+    helpButton: null,
+    rules: null,
+    backButton: null,
+
     init: function() {
         var self = this;
-        field = new game.Sprite('field').addTo(this.stage);
-        field.x = 0;
-        field.y = -field.height;
-        this.addTween(field, {y: 0}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+        this.field = new game.Sprite('field').addTo(this.stage);
+        this.field.x = 0;
+        this.field.y = -this.field.height;
+        this.field.interactive = true;
+        this.field.click = this.field.tap = this.fieldClick.bind(this);
+        this.addTween(this.field, {y: 0}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
 
         this.chip = new game.Sprite('chip-home').addTo(this.stage);
         this.chip.scale.x = this.chip.scale.y = 0.7;
         this.chip.anchor.set(0.5, 0.5);
         this.chip.center();
-        this.chip.y = -field.height/2;
-        this.addTween(this.chip, {y: game.system.height / 2}, 600,
+        this.chip.y = -game.system.height + 516;//-this.field.height/2;
+        this.addTween(this.chip, {y: 516}, 600,
             {delay: 400, easing: game.Tween.Easing.Quadratic.Out,
              onComplete: function() {
                  self.addObject(self.dice);
@@ -138,11 +144,41 @@ game.createScene('Game', {
         this.dice = new game.Dice();
 
         this.aiScoreText = new game.BitmapText('AI: 0', { font: 'Foo' }).addTo(this.stage);
-        this.aiScoreText.position.set(500, -game.system.height + 40);
+        this.aiScoreText.position.set(500, -game.system.height + 110);
         this.humanScoreText = new game.BitmapText('YOU: 0', { font: 'Foo' }).addTo(this.stage);
         this.humanScoreText.position.set(465, -110);
-        this.addTween(this.aiScoreText, {y: 40}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
+        this.addTween(this.aiScoreText, {y: 110}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
         this.addTween(this.humanScoreText, {y: 850}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
+
+        this.helpButton = new game.Sprite('help').addTo(this.stage);
+        this.helpButton.anchor.set(0.5, 0.5);
+        this.helpButton.scale.set(0.5, 0.5);
+        this.helpButton.x = 50;
+        this.helpButton.y = -960 + 150;
+        this.helpButton.interactive = true;
+        this.helpButton.click = this.helpButton.tap = this.helpClick.bind(this);
+        this.addTween(this.helpButton, {y: 150}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+
+        this.backButton = new game.Sprite('close').addTo(this.stage);
+        this.backButton.anchor.set(0.5, 0.5);
+        this.backButton.scale.set(0.5, 0.5);
+        this.backButton.x = 50;
+        this.backButton.y = -960 + 225;
+        this.backButton.interactive = true;
+        this.backButton.click = this.backButton.tap = this.backClick.bind(this);
+        this.addTween(this.backButton, {y: 225}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+
+        this.rules = new game.Sprite('rules').addTo(this.stage);
+        this.rules.x = -640;
+        this.rules.y = 0;
+
+        this.hideRules = new game.Sprite('close').addTo(this.stage);
+        this.hideRules.anchor.set(0.5, 0.5);
+        this.hideRules.scale.set(0.5, 0.5);
+        this.hideRules.x = -640 + 50;
+        this.hideRules.y = 300;
+        this.hideRules.interactive = true;
+        this.hideRules.click = this.hideRules.tap = this.hideRulesClick.bind(this);
 
         this.message = new game.Sprite('Intercept_home').addTo(this.stage);
         this.message.anchor.set(0.5, 0.5);
@@ -162,7 +198,30 @@ game.createScene('Game', {
         this.canTap = false;
     },
 
-    mouseup: function() {
+    helpClick: function() {
+        this.addTween(this.rules, {x: 0}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+        this.addTween(this.hideRules, {x: 50}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+        this.helpButton.interactive = false;
+        this.field.interactive = false;
+        this.backButton.interactive = true;
+    },
+
+    backClick: function() {
+        game.system.setScene('Main');
+    },
+
+    hideRulesClick: function() {
+        var self = this;
+        this.addTween(this.rules, {x: -640}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out,
+            onComplete: function() {
+                self.backButton.interactive = true;
+                self.helpButton.interactive = true;
+                self.field.interactive = true;
+            }}).start();
+        this.addTween(this.hideRules, {x: -640+50}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+    },
+
+    fieldClick: function() {
         if (!this.canTap) { return; }
 
         if (this.inMessage) {
@@ -221,21 +280,21 @@ game.createScene('Game', {
             self.addTimer(250, function() {
                 if (self.dice.value1 === self.dice.value2) {
                     // doubles? turn over
-                    if ((self.chipZone == 12 || self.chipZone == -12) &&
+                    if ((self.chipZone == 11 || self.chipZone == -11) &&
                         self.possession != self.turn) {
                         self.blockGoal();
                     } else {
                         self.changePossession();
                     }
                 } else if (self.turn === self.possession) {
-                    if ((self.chipZone == 12  && self.possession == game.AI) ||
-                        (self.chipZone == -12 && self.possession == game.HUMAN)) {
+                    if ((self.chipZone == 11  && self.possession == game.AI) ||
+                        (self.chipZone == -11 && self.possession == game.HUMAN)) {
                         self.scoreGoal();
                     } else {
                         self.advanceToken();
                     }
                 } else {
-                    if (self.chipZone == 12 || self.chipZone == -12) {
+                    if (self.chipZone == 11 || self.chipZone == -11) {
                         self.scoreGoal();
                     } else {
                         self.endTurn();
@@ -278,20 +337,20 @@ game.createScene('Game', {
         // AI territory < 0, Human territory > 0
 
         this.chipZone += (this.possession == game.HUMAN) ? -move : move;
-        if (this.chipZone > 12) { this.chipZone = 12; }
-        if (this.chipZone < -12) { this.chipZone = -12; }
+        if (this.chipZone > 11) { this.chipZone = 11; }
+        if (this.chipZone < -11) { this.chipZone = -11; }
 
-        var newpos = game.system.height * 0.5;
+        var newpos = 516;//game.system.height * 0.5;
         if (this.chipZone > 0) {
-            newpos += 28 + (this.chipZone - 1) * 38.5;
+            newpos += 24 + (this.chipZone - 1) * 36;
         } else if (this.chipZone < 0) {
-            newpos += -28 + (this.chipZone + 1) * 38.5;
+            newpos += -24 + (this.chipZone + 1) * 36;
         }
 
         this.addTween(this.chip, {y: newpos}, 500, {
             easing: game.Tween.Easing.Quadratic.InOut,
             onComplete: function() {
-                if (self.chipZone == 12 || self.chipZone == -12) {
+                if (self.chipZone == 11 || self.chipZone == -11) {
                     self.goalShot();
                 } else {
                     self.endTurn();
@@ -317,7 +376,7 @@ game.createScene('Game', {
     scoreGoal: function() {
         var self = this;
 
-        if (self.chipZone == 12) {
+        if (self.chipZone == 11) {
             //game.audio.playSound('boo');
         } else {
             //game.audio.playSound('cheer');
@@ -325,11 +384,11 @@ game.createScene('Game', {
 
         this.showMessage('Goal', function() {
             var kickOffPlayer = false;
-            if (self.chipZone == 12) {
+            if (self.chipZone == 11) {
                 game.AiScore += 1;
                 kickOffPlayer = game.HUMAN;
             }
-            if (self.chipZone == -12) {
+            if (self.chipZone == -11) {
                 game.HumanScore += 1;
                 kickOffPlayer = game.AI;
             }
@@ -343,7 +402,7 @@ game.createScene('Game', {
             self.hideDice();
             self.addTimer(1000, function() {
                 self.chipZone = 0;
-                self.chip.y = game.system.height * 0.5;
+                self.chip.y = 516;
                 self.turn = kickOffPlayer;
                 if (kickOffPlayer == game.HUMAN) {
                     self.dice.setPlayerPosition();
@@ -387,7 +446,7 @@ game.createScene('Game', {
         this.hideDice();
         this.addTimer(1000, function() {
             self.chipZone = 0;
-            self.chip.y = game.system.height * 0.5;
+            self.chip.y = 516;
             self.turn = game.HUMAN;
             self.dice.setPlayerPosition();
             self.possession = game.HUMAN;
