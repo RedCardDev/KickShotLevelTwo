@@ -14,6 +14,7 @@ game.HumanScore = 0;
 game.AiScore = 0;
 game.MaxScore = 5;
 
+// Rob was here
 game.createScene('Main', {
     backgroundColor: 0x629dc5,
     title: null,
