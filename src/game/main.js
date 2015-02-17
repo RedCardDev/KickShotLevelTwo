@@ -268,8 +268,33 @@ game.createScene('Game', {
         }
         this.showDice();
     },
+	// NEW rollDice function 
+	rollDice: function(player,numDice) {
+        this.disableInput();
 
+        var self = this;
+        this.dice.roll();
+        // roll the dice for a second
+        this.addTimer(1000, function() {
+            self.dice.stopRoll();
+            // brief pause before action is taken
+			console.log("Hello??");
+			suspend1(3000);
+            
+        });
+    },
+	
+	suspend1: function(millisec){
+		this.pause();
+		console.log("milliseconds till wakeup: " + millisec);
+		self.addTimer(millisec, function() {
+			this.resume();
+		});
+	},
+	// legacy function 
+	/*
     rollDice: function() {
+	
         this.disableInput();
 
         var self = this;
@@ -292,7 +317,8 @@ game.createScene('Game', {
                         (self.chipZone == -11 && self.possession == game.HUMAN)) {
                         self.scoreGoal();
                     } else {
-                        self.advanceToken();
+                        //self.advanceToken();
+						self.moveBall(5);
                     }
                 } else {
                     if (self.chipZone == 11 || self.chipZone == -11) {
@@ -305,7 +331,8 @@ game.createScene('Game', {
         });
     },
 
-    changePossession: function() {
+	*/
+    changePossession: function() { // This looks like what we want TurnOver() to be 
         var self = this;
         this.showMessage('Intercept', function() {
             self.possession = !self.possession;
@@ -330,10 +357,9 @@ game.createScene('Game', {
             });
         });
     },
-
-    advanceToken: function() {
+	moveBall: function( move) { // NEW MoveBall ~~
         var self = this;
-        var move = Math.max(this.dice.value1, this.dice.value2);
+        //var move = Math.max(this.dice.value1, this.dice.value2);// make this an argument 
 
         // AI territory < 0, Human territory > 0
 
@@ -343,7 +369,36 @@ game.createScene('Game', {
 
         var newpos = 516;//game.system.height * 0.5;
         if (this.chipZone > 0) {
-            newpos += 24 + (this.chipZone - 1) * 36;
+            newpos += 24 + (this.chipZone - 1) * 36; // what do the numbers mean?
+        } else if (this.chipZone < 0) {
+            newpos += -24 + (this.chipZone + 1) * 36;
+        }
+
+        this.addTween(this.chip, {y: newpos}, 500, {
+            easing: game.Tween.Easing.Quadratic.InOut,
+            onComplete: function() {
+                if (self.chipZone == 11 || self.chipZone == -11) {
+                    self.goalShot();
+                } else {
+                    self.endTurn();
+                }
+            }
+        }).start();
+    },
+	// legacy move function 
+    advanceToken: function() { // this looks like what we want MoveBall(number) to be 
+        var self = this;
+        var move = Math.max(this.dice.value1, this.dice.value2);// make this an argument 
+
+        // AI territory < 0, Human territory > 0
+
+        this.chipZone += (this.possession == game.HUMAN) ? -move : move;
+        if (this.chipZone > 11) { this.chipZone = 11; }
+        if (this.chipZone < -11) { this.chipZone = -11; }
+
+        var newpos = 516;//game.system.height * 0.5;
+        if (this.chipZone > 0) {
+            newpos += 24 + (this.chipZone - 1) * 36; // what do the numbers mean?
         } else if (this.chipZone < 0) {
             newpos += -24 + (this.chipZone + 1) * 36;
         }

@@ -17,7 +17,7 @@ game.createClass('Dice', {
         this.setPlayerPosition();
     },
 
-    update: function() {
+    update: function() { // this has elements of an animateDice type function 
         if (this.rolling && !this.timing) {
             var self = this;
             this.timing = true;
@@ -25,7 +25,7 @@ game.createClass('Dice', {
             this.value2 = ~~Math.randomBetween(1, 7);
             this.die1.setTexture('dice' + this.value1);
             this.die2.setTexture('dice' + this.value2);
-            game.scene.addTimer(100, function() {
+            game.scene.addTimer(100, function() { //~~Math.randomBetween(1, 7)*50
                 self.timing = false;
             });
         }
