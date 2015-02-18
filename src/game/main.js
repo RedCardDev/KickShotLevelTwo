@@ -14,7 +14,7 @@ game.HumanScore = 0;
 game.AiScore = 0;
 game.MaxScore = 5;
 
-// Rob was here
+/*** Title screen ***/
 game.createScene('Main', {
     backgroundColor: 0x629dc5,
     title: null,
@@ -98,6 +98,7 @@ game.createScene('Main', {
     }
 });
 
+/*** Game ***/
 game.createScene('Game', {
     backgroundColor: 0x629dc5,
 
@@ -231,7 +232,7 @@ game.createScene('Game', {
         }
 
         if (this.turn == game.HUMAN) {
-            this.rollDice();
+            this.rollDice("Player 1");
         }
     },
 
@@ -253,7 +254,7 @@ game.createScene('Game', {
 
         if (this.turn == game.AI) {
             this.addTimer(1000, function() {
-                self.rollDice();
+                self.rollDice("Player 2");
             });
         }
     },
@@ -269,7 +270,25 @@ game.createScene('Game', {
         this.showDice();
     },
 
-    rollDice: function() {
+    // Rolls dice for "Player 1", "Player 2", or "both"
+    rollDice: function(whichPlayer) {
+        this.disableInput();
+
+        var self = this;
+        this.dice.roll(whichPlayer);
+        // roll the dice for a second
+        this.addTimer(1000, function() {
+            self.dice.stopRoll();
+            // brief pause before other actions can be taken
+            self.addTimer(250, function() {
+                //console.log("dice roll complete.Re-enabling input."); 
+                self.enableInput();
+            });
+        });
+    },
+
+    // Old dice rolling function. Handles dice rolling, goal attempts, ball movement, and ending turns
+    oldrollDice: function() {
         this.disableInput();
 
         var self = this;
@@ -325,12 +344,41 @@ game.createScene('Game', {
                 if (self.turn == game.HUMAN) {
                     self.enableInput();
                 } else {
+                    // TODO: pass in appropriate player for dice roll
                     self.rollDice();
                 }
             });
         });
     },
 
+    moveBall: function(move) {
+        var self = this;
+        //var move = Math.max(this.dice.value1, this.dice.value2);
+
+        // AI territory < 0, Human territory > 0
+
+        this.chipZone += (this.possession == game.HUMAN) ? -move : move;
+        if (this.chipZone > 11) { this.chipZone = 11; }
+        if (this.chipZone < -11) { this.chipZone = -11; }
+
+        // Set target position
+        var newpos = 516;//game.system.height * 0.5;
+        if (this.chipZone > 0) {
+            newpos += 24 + (this.chipZone - 1) * 36;
+        } else if (this.chipZone < 0) {
+            newpos += -24 + (this.chipZone + 1) * 36;
+        }
+
+        // Animation
+        this.addTween(this.chip, {y: newpos}, 500, {
+            easing: game.Tween.Easing.Quadratic.InOut,
+            onComplete: function() {
+                // previously, endTurn() called here. Should be done by central control.
+            }
+        }).start();
+    },
+
+    /*  old function. Replaced by moveBall  */
     advanceToken: function() {
         var self = this;
         var move = Math.max(this.dice.value1, this.dice.value2);
@@ -463,6 +511,7 @@ game.createScene('Game', {
         this.humanScoreText.setText('You: ' + game.HumanScore);
         this.aiScoreText.setText('AI: ' + game.AiScore);
     }
+    
 });
 
 });

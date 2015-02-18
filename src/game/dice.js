@@ -9,6 +9,7 @@ game.createClass('Dice', {
     timing: false,
 
     init: function() {
+        // Create 2 dice
         this.die1 = new game.Sprite('dice1').addTo(game.scene.stage);
         this.die2 = new game.Sprite('dice1').addTo(game.scene.stage);
         this.die1.x = this.die2.x = -50;
@@ -41,22 +42,58 @@ game.createClass('Dice', {
         game.scene.addTween(this.die2, {x: -this.die2.width}, 500, { easing: game.Tween.Easing.Back.In }).start();
     },
 
-    roll: function() {
+    roll: function(whichPlayer) {
         this.rolling = true;
+
+        // Capitalize string so case doesn't matter
+        whichPlayer = whichPlayer.toUpperCase();
+
+        // Move dice to the player(s) who will be rolling
+        switch(whichPlayer) {
+            case "PLAYER 1":
+                this.setPlayerPosition();
+                console.log("Rolling dice for Player 1...");
+                break;
+            case "PLAYER 2":
+                this.setAiPosition();
+                console.log("Rolling dice for Player 2...");
+                break;
+            case "BOTH":
+                this.setBothPositions();
+                console.log("Rolling one die for each player...");
+                break;
+            default : 
+                console.log("Error: Can't roll dice for player \"" + whichPlayer + "\". Use \"Player 1\", \"Player 2\", or \"both\".");
+                break; 
+        }
     },
+
+    // // Old dice rolling function
+    // roll: function() {
+    //     this.rolling = true;
+    // },
 
     stopRoll: function() {
         this.rolling = false;
+        console.log("Dice rolled. Die 1: " + this.value1 + "\n              Die 2: " + this.value2);
     },
 
+    // Put both dice on Player 1's side
     setPlayerPosition: function() {
         this.die1.y = game.system.height - 100;
         this.die2.y = game.system.height - 200;
     },
 
+    // Put both dice on Player 2's (the computer) side
     setAiPosition: function() {
         this.die1.y = 175;
         this.die2.y = 275;
+    },
+
+    // Put one die on Player 1's side and the other die on Player 2's side
+    setBothPositions: function() {
+        this.die1.y = game.system.height - 100;
+        this.die2.y = 175;
     },
 
     reset: function() {
