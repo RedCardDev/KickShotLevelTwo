@@ -116,6 +116,7 @@ game.createScene('Game', {
 
     chip: null,
     chipZone: 0,
+	gamePhase: -1,
 
     helpButton: null,
     rules: null,
@@ -190,6 +191,8 @@ game.createScene('Game', {
 
         game.HumanScore = 0;
         game.AiScore = 0;
+		
+		this.gamePhase = 0;
     },
 
     enableInput: function() {
@@ -224,16 +227,185 @@ game.createScene('Game', {
     },
 
     fieldClick: function() {
+	
+		var self = this;
+		
         if (!this.canTap) { return; }
 
         if (this.inMessage) {
             this.hideMessage(this.afterMessage);
             return;
         }
-
-        if (this.turn == game.HUMAN) {
-            this.rollDice("Player 1");
-        }
+		
+				
+		if (this.gamePhase == 7)
+		{
+			this.gamePhase = 4;
+		}
+		
+		if (this.gamePhase == 6)
+		{
+			if (this.turn == game.HUMAN)
+			{
+				if (this.possession == game.HUMAN)
+				{
+					// Pass
+					this.moveBall (Math.max(this.dice.value1, this.dice.value2));
+						self.changeActivePlayer();
+						if (this.dice.value1 == 1 || this.dice.value2 == 1)
+						{
+							self.changePossession()
+						}
+				}
+				else
+				{
+					// Intercept
+					self.changeActivePlayer();
+					if (this.dice.value1 == 6 || this.dice.value2 == 6)
+					{
+						self.changePossession()
+					}
+				}
+			}
+			else
+			{
+				if (this.possession == game.AI)
+				{
+					// Pass
+					this.moveBall (Math.max(this.dice.value1, this.dice.value2));
+					self.changeActivePlayer();
+					if (this.dice.value1 == 1 || this.dice.value2 == 1)
+					{
+							self.changePossession()
+					}
+				}
+				else
+				{
+					// Intercept
+					self.changeActivePlayer();
+					if (this.dice.value1 == 6 || this.dice.value2 == 6)
+					{
+						self.changePossession()
+					}
+				}
+			}
+			this.gamePhase = 7;
+		}
+		
+		if (this.gamePhase == 5)
+		{
+			if (this.turn == game.HUMAN)
+			{
+				if (this.possession == game.HUMAN)
+				{
+					// Pass
+					console.log("Player Pass");
+					this.rollDice("Player 1");
+				}
+				else
+				{
+					// Intercept
+					console.log("Player Intercept");
+					this.rollDice("Player 1");
+				}
+			}
+			else
+			{
+				if (this.possession == game.AI)
+				{
+					// Pass
+					console.log("AI Pass");
+					this.rollDice("Player 2");
+				}
+				else
+				{
+					// Intercept
+					console.log("AI Intercept");
+					this.rollDice("Player 2");
+				}
+			}
+			this.gamePhase = 6;
+		}
+		
+		if (this.gamePhase == 4)
+		{
+			if (this.turn == game.HUMAN)
+			{
+				//Open Card Menu
+				console.log("Card Menu");
+			}
+			else{
+				// AI Choice
+				console.log("AI");
+			}
+			this.gamePhase = 5;
+		}
+		
+		if (this.gamePhase == 3)
+		{
+			if (this.turn == game.HUMAN) {
+				this.moveBall (Math.max(this.dice.value1, this.dice.value2));
+				self.changeActivePlayer();
+				if (this.dice.value1 == 1 || this.dice.value2 == 1)
+				{
+					self.changePossession()
+				}
+			}
+			else if (this.turn == game.AI) {
+				this.moveBall (Math.max(this.dice.value1, this.dice.value2));
+				self.changeActivePlayer();
+				if (this.dice.value1 == 1 || this.dice.value2 == 1)
+				{
+					self.changePossession()
+				}
+			}
+			this.gamePhase = 4;
+		}
+		
+		if (this.gamePhase == 2)
+		{
+			//KickOff
+			if (this.turn == game.HUMAN) {
+				this.rollDice("Player 1");
+			}
+			else if (this.turn == game.AI) {
+				this.rollDice("Player 2");
+			}
+			this.gamePhase = 3;
+		}
+		
+		if (this.gamePhase == 1)
+		{
+			if (this.dice.value1 > this.dice.value2)
+			{
+				this.turn = game.HUMAN;
+				this.possession = game.HUMAN;
+				this.gamePhase = 2;
+			}
+			else if (this.dice.value2 > this.dice.value1)
+			{
+				this.turn = game.AI;
+				this.possession = game.AI;
+				this.gamePhase = 2;
+			}
+			else
+			{
+				this.gamePhase = 0;
+			}	
+		}
+		
+		if (this.gamePhase == 0)
+		{
+			//Roll for side
+			this.rollDice("Both");
+			this.gamePhase = 1;
+		}
+		
+		else if (1 == 0){
+			if (this.turn == game.HUMAN) {
+				this.rollDice("Player 1");
+			}
+		}
     },
 
     hideDice: function() {
