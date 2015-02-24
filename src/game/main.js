@@ -52,6 +52,7 @@ game.createScene('Main', {
 
         this.cycle = this.characters.shuffle();
         this.nextCharacter();
+
     },
 
     playClick: function() {
@@ -122,8 +123,36 @@ game.createScene('Game', {
     rules: null,
     backButton: null,
 
+    boardZone: [
+        {zone: -11, ySpot: 60},
+        {zone: -10, ySpot: 99},
+        {zone: -9, ySpot: 139},
+        {zone: -8, ySpot: 178},
+        {zone: -7, ySpot: 218},
+        {zone: -6, ySpot: 258},
+        {zone: -5, ySpot: 298},
+        {zone: -4, ySpot: 338},
+        {zone: -3, ySpot: 378},
+        {zone: -2, ySpot: 418},
+        {zone: -1, ySpot: 456},
+        {zone: 0,  ySpot: 480},
+        {zone: 1,  ySpot: 507},
+        {zone: 2,  ySpot: 546},
+        {zone: 3,  ySpot: 584},
+        {zone: 4,  ySpot: 622},
+        {zone: 5,  ySpot: 660},
+        {zone: 6,  ySpot: 699},
+        {zone: 7,  ySpot: 737},
+        {zone: 8,  ySpot: 776},
+        {zone: 9,  ySpot: 815},
+        {zone: 10, ySpot: 854},
+        {zone: 11, ySpot: 895}],
+    
+
     init: function() {
+
         var self = this;
+        
         this.field = new game.Sprite('field').addTo(this.stage);
         this.field.x = 0;
         this.field.y = -this.field.height;
@@ -135,8 +164,8 @@ game.createScene('Game', {
         this.chip.scale.x = this.chip.scale.y = 0.7;
         this.chip.anchor.set(0.5, 0.5);
         this.chip.center();
-        this.chip.y = -game.system.height + 516;//-this.field.height/2;
-        this.addTween(this.chip, {y: 516}, 600,
+        this.chip.y = -game.system.height * 0.5;//-this.field.height/2;
+        this.addTween(this.chip, {y: game.system.height * 0.5}, 600,
             {delay: 400, easing: game.Tween.Easing.Quadratic.Out,
              onComplete: function() {
                  self.addObject(self.dice);
@@ -524,6 +553,7 @@ game.createScene('Game', {
     },
 
     moveBall: function(move) {
+
         var self = this;
         //var move = Math.max(this.dice.value1, this.dice.value2);
 
@@ -534,12 +564,21 @@ game.createScene('Game', {
         if (this.chipZone < -11) { this.chipZone = -11; }
 
         // Set target position
-        var newpos = 516;//game.system.height * 0.5;
-        if (this.chipZone > 0) {
-            newpos += 24 + (this.chipZone - 1) * 36;
-        } else if (this.chipZone < 0) {
-            newpos += -24 + (this.chipZone + 1) * 36;
+        //var newpos = 516;//game.system.height * 0.5;
+        var newpos = game.system.height * 0.5;
+
+        // New board (blank field)
+        if(self.chipZone != 0){
+            // newpos += this.boardZone[this.chipZone].ySpot;
+            newpos = self.boardZone[self.chipZone + 11].ySpot;
         }
+
+        // Old board (with KickShot logo)
+        // if (this.chipZone > 0) {
+        //     newpos += 24 + (this.chipZone - 1) * 36;
+        // } else if (this.chipZone < 0) {
+        //     newpos += -24 + (this.chipZone + 1) * 36;
+        // }
 
         // Animation
         this.addTween(this.chip, {y: newpos}, 500, {
