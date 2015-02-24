@@ -150,7 +150,7 @@ game.createScene('Game', {
         this.aiScoreText.position.set(500, -game.system.height + 110);
         this.humanScoreText = new game.BitmapText('YOU: 0', { font: 'Foo' }).addTo(this.stage);
         this.humanScoreText.position.set(465, -110);
-        this.addTween(this.aiScoreText, {y: 110}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
+        this.addTween(this.aiScoreText, {y: 50}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
         this.addTween(this.humanScoreText, {y: 850}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
 
         this.helpButton = new game.Sprite('help').addTo(this.stage);
@@ -160,7 +160,7 @@ game.createScene('Game', {
         this.helpButton.y = -960 + 150;
         this.helpButton.interactive = true;
         this.helpButton.click = this.helpButton.tap = this.helpClick.bind(this);
-        this.addTween(this.helpButton, {y: 150}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+        this.addTween(this.helpButton, {y: 90}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
 
         this.backButton = new game.Sprite('close').addTo(this.stage);
         this.backButton.anchor.set(0.5, 0.5);
@@ -169,7 +169,7 @@ game.createScene('Game', {
         this.backButton.y = -960 + 225;
         this.backButton.interactive = true;
         this.backButton.click = this.backButton.tap = this.backClick.bind(this);
-        this.addTween(this.backButton, {y: 225}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
+        this.addTween(this.backButton, {y: 165}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
 
         this.rules = new game.Sprite('rules').addTo(this.stage);
         this.rules.x = -640;
