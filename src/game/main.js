@@ -269,11 +269,13 @@ game.createScene('Game', {
 				
 		if (this.gamePhase == 7)
 		{
+            console.log("-----gamePhase 7-----");
 			this.gamePhase = 4;
 		}
 		
 		if (this.gamePhase == 6)
 		{
+            console.log("-----gamePhase 6-----");
 			if (this.turn == game.HUMAN)
 			{
 				if (this.possession == game.HUMAN)
@@ -323,6 +325,7 @@ game.createScene('Game', {
 		
 		if (this.gamePhase == 5)
 		{
+            console.log("-----gamePhase 5-----");
 			if (this.turn == game.HUMAN)
 			{
 				if (this.possession == game.HUMAN)
@@ -358,6 +361,7 @@ game.createScene('Game', {
 		
 		if (this.gamePhase == 4)
 		{
+            console.log("-----gamePhase 4-----");
 			if (this.turn == game.HUMAN)
 			{
 				//Open Card Menu
@@ -372,6 +376,7 @@ game.createScene('Game', {
 		
 		if (this.gamePhase == 3)
 		{
+            console.log("-----gamePhase 3-----");
 			if (this.turn == game.HUMAN) {
 				this.moveBall (Math.max(this.dice.value1, this.dice.value2));
 				self.changeActivePlayer();
@@ -391,9 +396,14 @@ game.createScene('Game', {
 			this.gamePhase = 4;
 		}
 		
+        //KickOff
 		if (this.gamePhase == 2)
 		{
-			//KickOff
+            console.log("-----gamePhase 2-----");
+
+            this.centerBall();
+            this.updateBallTexture();
+
 			if (this.turn == game.HUMAN) {
 				this.rollDice("Player 1");
 			}
@@ -405,6 +415,7 @@ game.createScene('Game', {
 		
 		if (this.gamePhase == 1)
 		{
+            console.log("-----gamePhase 1-----");
 			if (this.dice.value1 > this.dice.value2)
 			{
 				this.turn = game.HUMAN;
@@ -425,6 +436,7 @@ game.createScene('Game', {
 		
 		if (this.gamePhase == 0)
 		{
+            console.log("-----gamePhase 0-----");
 			//Roll for side
 			this.rollDice("Both");
 			this.gamePhase = 1;
@@ -464,9 +476,11 @@ game.createScene('Game', {
         if (this.turn === game.HUMAN) {
             this.turn = game.AI;
             this.dice.setAiPosition();
+            console.log("It is now the AI's turn.");
         } else {
             this.turn = game.HUMAN;
             this.dice.setPlayerPosition();
+            console.log("It is now Player 1's turn.");
         }
         this.showDice();
     },
@@ -529,9 +543,19 @@ game.createScene('Game', {
         var self = this;
         this.showMessage('Intercept', function() {
             self.possession = !self.possession;
-            self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
+            //self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
+            self.updateBallTexture();
+            // remove endturn() from here
             self.endTurn();
         });
+    },
+
+    centerBall: function() {
+        this.chip.y = game.system.height * 0.5;
+    },
+
+    updateBallTexture: function() {
+        this.chip.setTexture(this.possession == game.HUMAN ? 'chip-home' : 'chip-away');    
     },
 
     blockGoal: function() {

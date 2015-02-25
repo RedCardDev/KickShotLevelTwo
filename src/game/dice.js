@@ -15,7 +15,7 @@ game.createClass('Dice', {
         this.die1.x = this.die2.x = -50;
         this.die1.anchor.set(0.5, 0.5);
         this.die2.anchor.set(0.5, 0.5);
-        this.setPlayerPosition();
+        this.setBothPositions();
     },
 
     update: function() {
