@@ -327,7 +327,13 @@ game.createScene('Game', {
 					}
 				}
 			}
-			this.gamePhase = 7;
+			if (self.chipZone == 11 || self.chipZone == -11) // this if clause was added by Tessa 
+			{ 
+				this.scoreGoal();
+			}else{	
+				this.gamePhase = 7;
+				console.log("No Goal test!");
+			}
 		}
 		
 		if (this.gamePhase == 5)
@@ -663,8 +669,44 @@ game.createScene('Game', {
             });
         });
     },
+	
+	scoreGoal: function() {
+		// New function made by Tessa 
+        var self = this;
 
-    scoreGoal: function() {
+        if (self.chipZone == 11) {
+            //game.audio.playSound('boo');
+        } else {
+            //game.audio.playSound('cheer');
+        }
+
+        this.showMessage('Goal', function() { });
+			//var kickOffPlayer = false;
+			if (self.chipZone == 11) {
+				game.AiScore += 1;
+				//    kickOffPlayer = game.HUMAN;
+			}
+			if (self.chipZone == -11) {
+				game.HumanScore += 1;
+				//    kickOffPlayer = game.AI;
+			}
+			self.updateScore();
+
+			/*if (game.AiScore == game.MaxScore || game.HumanScore == game.MaxScore) {
+				self.showMessage('End', self.gameOver.bind(self));
+				return true ;
+			}*/
+			this.centerBall();
+			this.chipZone = 0;
+			this.changePossession();
+			this.updateBallTexture();
+			this.gamePhase = 2;
+				
+			pause(3000);
+			console.log("Goal test!");
+    },
+	
+    oldscoreGoal: function() {
         var self = this;
 
         if (self.chipZone == 11) {
@@ -752,7 +794,14 @@ game.createScene('Game', {
     updateScore: function() {
         this.humanScoreText.setText('You: ' + game.HumanScore);
         this.aiScoreText.setText('AI: ' + game.AiScore);
-    }
+    },
+	
+	pause: function(timeToPause){
+		// This pause was added by Tessa 
+		disableInput();
+		setTimer(function(){enableInput();},timeToPause);
+	
+	}
     
 });
 
