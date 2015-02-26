@@ -4,7 +4,8 @@ game.module(
     'engine.scene',
 
     'game.assets',
-    'game.dice'
+    'game.dice',
+    'game.deck'
 )
 .body(function() {
 
@@ -28,6 +29,7 @@ game.createScene('Main', {
     charIndex: 0,
 
     init: function() {
+
         this.title = new game.Sprite('title').addTo(this.stage);
         this.title.x = game.system.width / 2 - this.title.width / 2 + 10;
         this.title.y = -game.system.height / 4;
@@ -115,6 +117,8 @@ game.createScene('Game', {
     turn: game.HUMAN,
     possession: game.HUMAN,
 
+    playerDeck: null,
+
     chip: null,
     chipZone: 0,
 	gamePhase: -1,
@@ -174,6 +178,9 @@ game.createScene('Game', {
             }).start();
 
         this.dice = new game.Dice();
+
+        playerDeck = new game.Deck("home");
+        playerDeck.printDeck();
 
         this.aiScoreText = new game.BitmapText('AI: 0', { font: 'Foo' }).addTo(this.stage);
         this.aiScoreText.position.set(500, -game.system.height + 110);
