@@ -559,12 +559,13 @@ game.createScene('Game', {
             //self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
             self.updateBallTexture();
             // remove endturn() from here
-            self.endTurn();
+            self.endTurn(); // get rid of this 
         });
     },
 
     centerBall: function() {
         this.chip.y = game.system.height * 0.5;
+		this.chipZone = 0; // commit this 
     },
 
     updateBallTexture: function() {
@@ -665,7 +666,7 @@ game.createScene('Game', {
         this.addTimer(1000, function() {
             self.hideDice();
             self.addTimer(1000, function() {
-                self.changeActivePlayer();
+                self.changeActivePlayer(); // this is conflicty  
             });
         });
     },
@@ -702,7 +703,7 @@ game.createScene('Game', {
 			this.updateBallTexture();
 			this.gamePhase = 2;
 				
-			pause(3000);
+			//pause(3000);
 			console.log("Goal test!");
     },
 	

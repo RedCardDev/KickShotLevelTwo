@@ -11,7 +11,7 @@ game.createClass('Deck', {
 
     // These arrays hold how many of each type of card will appear in the decks
     homeOffenseCards: [
-        {name: "Pass", count: 3},
+        {name: "Pass", count: 7},
         {name: "Shot Right", count: 2},
         {name: "Shot Left", count: 2}
     ],
