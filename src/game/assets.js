@@ -48,7 +48,7 @@ game.addAsset('images/cards/DirectFreeKick.png', "Direct_Free_Kick");
 game.addAsset('images/cards/GoalBlockedAwayLeft.png', "Goal_Blocked_Away_Left");
 game.addAsset('images/cards/GoalBlockedAwayRight.png', "Goal_Blocked_Away_Right");
 game.addAsset('images/cards/GoalBlockedHomeLeft.png', "Goal_Blocked_Home_Left");
-game.addAsset('images/cards/GoalBlockedHomeRight.png', "Goal_Blocked_Home_Rigth");
+game.addAsset('images/cards/GoalBlockedHomeRight.png', "Goal_Blocked_Home_Right");
 game.addAsset('images/cards/GoalShotAwayLeft.png', "Goal_Shot_Away_Left");
 game.addAsset('images/cards/GoalShotAwayRight.png', "Goal_Shot_Away_Right");
 game.addAsset('images/cards/GoalShotHomeLeft.png', "Goal_Shot_Home_Left");

@@ -5,7 +5,8 @@ game.module(
 
     'game.assets',
     'game.dice',
-    'game.deck'
+    'game.deck',
+    'game.cardMenu'
 )
 .body(function() {
 
@@ -118,6 +119,7 @@ game.createScene('Game', {
     possession: game.HUMAN,
 
     playerDeck: null,
+    hand: [],
 
     chip: null,
     chipZone: 0,
@@ -179,8 +181,22 @@ game.createScene('Game', {
 
         this.dice = new game.Dice();
 
-        playerDeck = new game.Deck("home");
-        playerDeck.printDeck();
+        this.cardMenu = new game.CardMenu();
+
+        this.playerDeck = new game.Deck("home");
+        this.playerDeck.printDeck();
+
+        this.drawCard();
+        this.drawCard();
+        this.drawCard();
+        this.drawCard();
+        this.drawCard();
+        this.drawCard();
+
+        this.cardMenu.updateCards(this.hand);
+
+
+
 
         this.aiScoreText = new game.BitmapText('AI: 0', { font: 'Foo' }).addTo(this.stage);
         this.aiScoreText.position.set(500, -game.system.height + 110);
@@ -559,13 +575,13 @@ game.createScene('Game', {
             //self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
             self.updateBallTexture();
             // remove endturn() from here
-            self.endTurn(); // get rid of this 
+            self.endTurn();
         });
     },
 
     centerBall: function() {
         this.chip.y = game.system.height * 0.5;
-		this.chipZone = 0; // commit this 
+        this.chipZone = 0;
     },
 
     updateBallTexture: function() {
@@ -666,7 +682,7 @@ game.createScene('Game', {
         this.addTimer(1000, function() {
             self.hideDice();
             self.addTimer(1000, function() {
-                self.changeActivePlayer(); // this is conflicty  
+                self.changeActivePlayer();
             });
         });
     },
@@ -703,7 +719,7 @@ game.createScene('Game', {
 			this.updateBallTexture();
 			this.gamePhase = 2;
 				
-			//pause(3000);
+			this.pause(3000);
 			console.log("Goal test!");
     },
 	
@@ -750,6 +766,26 @@ game.createScene('Game', {
                 self.showDice();
             });
         });
+    },
+
+    // Draw card from player's deck and puts in hand
+    // ToDo: draw cards for computer
+    drawCard: function() {
+        if(this.hand.length <= 6){
+            this.hand.push( this.playerDeck.draw() );      
+        } else {
+            console.log("Can't draw a card for player 1, already too many cards in hand");
+        }
+        
+    },
+
+    // Print contents of "hand" for debugging
+    printHand: function() {
+        console.log("Printing contents of \"hand\"...");
+
+        for(var i = 0; i < 6; i++){
+            console.log("Hand[" + i + "]: " + this.hand[i]);
+        }
     },
 
     showMessage: function(msgType, after) {
@@ -799,8 +835,8 @@ game.createScene('Game', {
 	
 	pause: function(timeToPause){
 		// This pause was added by Tessa 
-		disableInput();
-		setTimer(function(){enableInput();},timeToPause);
+		this.disableInput();
+		this.addTimer(function(){this.enableInput();},timeToPause);
 	
 	}
     

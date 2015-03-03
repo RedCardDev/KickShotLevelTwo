@@ -11,27 +11,27 @@ game.createClass('Deck', {
 
     // These arrays hold how many of each type of card will appear in the decks
     homeOffenseCards: [
-        {name: "Pass", count: 7},
-        {name: "Shot Right", count: 2},
-        {name: "Shot Left", count: 2}
+        {name: "Pass_Home", count: 7},
+        {name: "Goal_Shot_Home_Left", count: 5},
+        {name: "Goal_Shot_Home_Right", count: 5},
     ],
 
     homeDefenseCards: [
-        {name: "Intercept", count: 1},
-        {name: "Goal Block Left", count: 2},
-        {name: "Goal Block Right", count: 2}
+        {name: "Intercept_Home", count: 5},
+        {name: "Goal_Blocked_Home_Left", count: 5},
+        {name: "Goal_Blocked_Home_Right", count: 5}
     ],
 
     awayOffenseCards: [
-        {name: "Pass", count: 8},
-        {name: "Shot Right", count: 5},
-        {name: "Shot Left", count: 5}
+        {name: "Pass_Away", count: 7},
+        {name: "Goal_Shot_Away_Left", count: 5},
+        {name: "Goal_Shot_Away_Right", count: 5}
     ],
 
     awayDefenseCards: [
-        {name: "Intercept", count: 5},
-        {name: "Goal Block Left", count: 4},
-        {name: "Goal Block Right", count: 4}
+        {name: "Intercept_Away", count: 5},
+        {name: "Goal_Blocked_Away_Left", count: 5},
+        {name: "Goal_Blocked_Away_Right", count: 5}
     ],
 
 
@@ -156,6 +156,16 @@ game.createClass('Deck', {
             // Free memory
             this.top6Cards = null;
 
+    },
+
+    // Draw a card from the top of the deck
+    draw: function() {
+        if(this.deck.length > 0) {
+            return this.deck.pop();
+        } else {
+            console.log("Deck length is not > 0, cannot draw a card");
+            return;
+        }
     },
 
 
