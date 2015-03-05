@@ -15,6 +15,7 @@ game.AI = false;
 game.HumanScore = 0;
 game.AiScore = 0;
 game.MaxScore = 5;
+game.Doubles = 0;
 
 /*** Title screen ***/
 game.createScene('Main', {
@@ -294,6 +295,14 @@ game.createScene('Game', {
 		{
             console.log("-----gamePhase 7-----");
 			this.gamePhase = 4;
+			console.log("-----end gamePhase 7-----");
+		}
+		
+		if (this.gamePhase == 8)
+		{
+            console.log("-----gamePhase 8-----");
+			this.gamePhase = 2;
+			console.log("-----end gamePhase 8-----");
 		}
 		
 		if (this.gamePhase == 6)
@@ -304,20 +313,33 @@ game.createScene('Game', {
 				if (this.possession == game.HUMAN)
 				{
 					// Pass
-					this.moveBall (Math.max(this.dice.value1, this.dice.value2));
-						self.changeActivePlayer();
-						if (this.dice.value1 == 1 || this.dice.value2 == 1)
+					if (this.dice.value1 == this.dice.value2)					
+					{
+						this.Doubles = 1;
+					}
+					else
+					{
+						this.Doubles = 0;
+					}
+					this.moveBall (Math.max(this.dice.value1, this.dice.value2) + this.Doubles);
+					if (this.dice.value1 == 1 || this.dice.value2 == 1)
+					{
+						if (self.chipZone != 11 || self.chipZone != -11)
 						{
-							self.changePossession()
+							self.changePossession();
 						}
+					}
+					//self.changeActivePlayer();
+					self.endTurn();
 				}
 				else
 				{
 					// Intercept
-					self.changeActivePlayer();
+					self.endTurn();
+					//self.changeActivePlayer();
 					if (this.dice.value1 == 6 || this.dice.value2 == 6)
 					{
-						self.changePossession()
+						self.changePossession();
 					}
 				}
 			}
@@ -326,20 +348,33 @@ game.createScene('Game', {
 				if (this.possession == game.AI)
 				{
 					// Pass
-					this.moveBall (Math.max(this.dice.value1, this.dice.value2));
-					self.changeActivePlayer();
+					if (this.dice.value1 == this.dice.value2)					
+					{
+						this.Doubles = 1;
+					}
+					else
+					{
+						this.Doubles = 0;
+					}
+					this.moveBall (Math.max(this.dice.value1, this.dice.value2) + this.Doubles);
+					self.endTurn();
+					//self.changeActivePlayer();
 					if (this.dice.value1 == 1 || this.dice.value2 == 1)
 					{
-							self.changePossession()
+						if (self.chipZone != 11 || self.chipZone != -11)
+						{
+							self.changePossession();
+						}
 					}
 				}
 				else
 				{
 					// Intercept
-					self.changeActivePlayer();
+					self.endTurn();
+					//self.changeActivePlayer();
 					if (this.dice.value1 == 6 || this.dice.value2 == 6)
 					{
-						self.changePossession()
+						self.changePossession();
 					}
 				}
 			}
@@ -350,6 +385,7 @@ game.createScene('Game', {
 				this.gamePhase = 7;
 				console.log("No Goal test!");
 			}
+			console.log("-----end gamePhase 6-----");
 		}
 		
 		if (this.gamePhase == 5)
@@ -386,6 +422,7 @@ game.createScene('Game', {
 				}
 			}
 			this.gamePhase = 6;
+			console.log("-----end gamePhase 5-----");
 		}
 		
 		if (this.gamePhase == 4)
@@ -401,28 +438,48 @@ game.createScene('Game', {
 				console.log("AI");
 			}
 			this.gamePhase = 5;
+			console.log("-----end gamePhase 4-----");
 		}
 		
 		if (this.gamePhase == 3)
 		{
             console.log("-----gamePhase 3-----");
 			if (this.turn == game.HUMAN) {
-				this.moveBall (Math.max(this.dice.value1, this.dice.value2));
-				self.changeActivePlayer();
+				if (this.dice.value1 == this.dice.value2)					
+				{
+					this.Doubles = 1;
+				}
+				else
+				{
+					this.Doubles = 0;
+				}
+				this.moveBall (Math.max(this.dice.value1, this.dice.value2) + this.Doubles);
+				self.endTurn();
+				//self.changeActivePlayer();
 				if (this.dice.value1 == 1 || this.dice.value2 == 1)
 				{
 					self.changePossession()
 				}
 			}
 			else if (this.turn == game.AI) {
-				this.moveBall (Math.max(this.dice.value1, this.dice.value2));
-				self.changeActivePlayer();
+				if (this.dice.value1 == this.dice.value2)					
+				{
+					this.Doubles = 1;
+				}
+				else
+				{
+					this.Doubles = 0;
+				}
+				this.moveBall (Math.max(this.dice.value1, this.dice.value2) + this.Doubles);
+				self.endTurn();
+				//self.changeActivePlayer();
 				if (this.dice.value1 == 1 || this.dice.value2 == 1)
 				{
 					self.changePossession()
 				}
 			}
 			this.gamePhase = 4;
+			console.log("-----end gamePhase 3-----");
 		}
 		
         //KickOff
@@ -440,6 +497,7 @@ game.createScene('Game', {
 				this.rollDice("Player 2");
 			}
 			this.gamePhase = 3;
+			console.log("-----end gamePhase 2-----");
 		}
 		
 		if (this.gamePhase == 1)
@@ -460,7 +518,8 @@ game.createScene('Game', {
 			else
 			{
 				this.gamePhase = 0;
-			}	
+			}
+			console.log("-----end gamePhase 1-----");
 		}
 		
 		if (this.gamePhase == 0)
@@ -469,6 +528,7 @@ game.createScene('Game', {
 			//Roll for side
 			this.rollDice("Both");
 			this.gamePhase = 1;
+			console.log("-----end gamePhase 0-----");
 		}
 		
 		else if (1 == 0){
@@ -479,7 +539,7 @@ game.createScene('Game', {
     },
 
     hideDice: function() {
-        this.disableInput();
+        //this.disableInput();
         this.dice.hide();
     },
 
@@ -496,7 +556,8 @@ game.createScene('Game', {
 
         if (this.turn == game.AI) {
             this.addTimer(1000, function() {
-                self.rollDice("Player 2");
+                //self.rollDice("Player 2");
+				self.enableInput();
             });
         }
     },
@@ -575,7 +636,6 @@ game.createScene('Game', {
             //self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
             self.updateBallTexture();
             // remove endturn() from here
-            self.endTurn();
         });
     },
 
@@ -665,9 +725,9 @@ game.createScene('Game', {
             easing: game.Tween.Easing.Quadratic.InOut,
             onComplete: function() {
                 if (self.chipZone == 11 || self.chipZone == -11) {
-                    self.goalShot();
+                    //self.goalShot();
                 } else {
-                    self.endTurn();
+                   // self.endTurn();
                 }
             }
         }).start();
@@ -683,6 +743,7 @@ game.createScene('Game', {
             self.hideDice();
             self.addTimer(1000, function() {
                 self.changeActivePlayer();
+				self.showDice();
             });
         });
     },
@@ -717,7 +778,7 @@ game.createScene('Game', {
 			this.chipZone = 0;
 			this.changePossession();
 			this.updateBallTexture();
-			this.gamePhase = 2;
+			this.gamePhase = 8;
 				
 			this.pause(3000);
 			console.log("Goal test!");
