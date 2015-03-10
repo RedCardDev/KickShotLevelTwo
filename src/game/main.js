@@ -335,12 +335,12 @@ game.createScene('Game', {
 				else
 				{
 					// Intercept
-					self.endTurn();
 					//self.changeActivePlayer();
 					if (this.dice.value1 == 6 || this.dice.value2 == 6)
 					{
 						self.changePossession();
 					}
+					self.endTurn();
 				}
 			}
 			else
@@ -572,7 +572,7 @@ game.createScene('Game', {
             this.dice.setPlayerPosition();
             console.log("It is now Player 1's turn.");
         }
-        this.showDice();
+        //this.showDice();
     },
 
     // Rolls dice for "Player 1", "Player 2", or "both"
@@ -738,12 +738,14 @@ game.createScene('Game', {
     },
 
     endTurn: function() {
+		console.log("EndingTurn");
         var self = this;
         this.addTimer(1000, function() {
             self.hideDice();
             self.addTimer(1000, function() {
                 self.changeActivePlayer();
 				self.showDice();
+				console.log("ShowingDice");
             });
         });
     },
