@@ -370,12 +370,13 @@ game.createScene('Game', {
 				else
 				{
 					// Intercept
-					self.endTurn();
+					
 					//self.changeActivePlayer();
 					if (this.dice.value1 == 6 || this.dice.value2 == 6)
 					{
 						self.changePossession();
 					}
+                    self.endTurn();
 				}
 			}
 			if (self.chipZone == 11 || self.chipZone == -11) // this if clause was added by Tessa 
