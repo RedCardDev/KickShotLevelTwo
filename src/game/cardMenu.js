@@ -45,11 +45,39 @@ game.createClass('CardMenu', {
         //console.log("Mousing over card at (" + mousedata.global.x + "," + mousedata.global.y + ")");
         mousedata.target.scale.x = mousedata.target.scale.y = 0.5;
         mousedata.target.position.y -= 500;
+		//console.log("" + mousedata.target.position.x);
+		
+		
+		// These numbers will have to be adjusted if card size is adjusted.
+		if (mousedata.target.position.x <= 50)
+			console.log("1");
+		else if (mousedata.target.position.x <= 100)
+			console.log("2");
+		else if (mousedata.target.position.x <= 200)
+			console.log("3");
+		else if (mousedata.target.position.x <= 250)
+			console.log("4");
+		else if (mousedata.target.position.x <= 350)
+			console.log("5");
+		else
+			console.log("6");
     },
 
     clickedCard: function(mousedata){
         console.log("clicked card");
         //console.log("event target: " + mousedata.global.x);
+		if (mousedata.target.position.x <= 50)
+			console.log("1");
+		else if (mousedata.target.position.x <= 100)
+			console.log("2");
+		else if (mousedata.target.position.x <= 200)
+			console.log("3");
+		else if (mousedata.target.position.x <= 250)
+			console.log("4");
+		else if (mousedata.target.position.x <= 350)
+			console.log("5");
+		else
+			console.log("6");
     },
    
     // Update the cards to match cards in hand
