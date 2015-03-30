@@ -184,6 +184,14 @@ game.createScene('Game', {
 
         this.cardMenu = new game.CardMenu();
 
+        this.cardMenu.cards[0].sprite.click = this.clickCard0.bind(this);
+        this.cardMenu.cards[1].sprite.click = this.clickCard1.bind(this);
+        this.cardMenu.cards[2].sprite.click = this.clickCard2.bind(this);
+        this.cardMenu.cards[3].sprite.click = this.clickCard3.bind(this);
+        this.cardMenu.cards[4].sprite.click = this.clickCard4.bind(this);
+        this.cardMenu.cards[5].sprite.click = this.clickCard5.bind(this);
+
+
         this.playerDeck = new game.Deck("home");
         this.playerDeck.printDeck();
 
@@ -902,7 +910,46 @@ game.createScene('Game', {
 		this.disableInput();
 		this.addTimer(function(){this.enableInput();},timeToPause);
 	
-	}
+	},
+
+    testPlayable: function(cardName) {
+        return this.cardMenu.isPlayable(cardName, this.turn, this.possession, this.chipZone);
+    },
+
+
+
+    /* Card Menu clicks */
+    clickCard0: function(mousedata) { 
+        console.log("clicked card 0");
+        this.testPlayable(this.cardMenu.cards[0].name);
+    },
+    clickCard1: function(mousedata) { 
+        console.log("clicked card 1");
+        this.testPlayable(this.cardMenu.cards[1].name);
+    },
+    clickCard2: function(mousedata) { 
+        console.log("clicked card 2");
+        this.testPlayable(this.cardMenu.cards[2].name);
+    },
+    clickCard3: function(mousedata) { 
+        console.log("clicked card 3");
+        this.testPlayable(this.cardMenu.cards[3].name);
+    },
+    clickCard4: function(mousedata) { 
+        console.log("clicked card 4");
+        this.testPlayable(this.cardMenu.cards[4].name);
+    },
+    clickCard5: function(mousedata) { 
+        console.log("clicked card 5");
+        this.testPlayable(this.cardMenu.cards[5].name);
+    }
+    
+
+
+
+
+
+
     
 });
 
