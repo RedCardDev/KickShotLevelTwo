@@ -37,8 +37,10 @@ game.createClass('Dice', {
         game.scene.addTween(this.die2, {x: 150}, 500, { easing: game.Tween.Easing.Back.Out }).start();
     },
 
-    hide: function() {
-        game.scene.addTween(this.die1, {x: -this.die1.width}, 500, { easing: game.Tween.Easing.Back.In }).start();
+    hide: function(callback) {
+        game.scene.addTween(this.die1, {x: -this.die1.width}, 500, { easing: game.Tween.Easing.Back.In, 
+            onComplete: function() { callback(); }
+          }).start();
         game.scene.addTween(this.die2, {x: -this.die2.width}, 500, { easing: game.Tween.Easing.Back.In }).start();
     },
 
@@ -75,7 +77,7 @@ game.createClass('Dice', {
 
     stopRoll: function() {
         this.rolling = false;
-        console.log("Dice rolled. Die 1: " + this.value1 + "\n              Die 2: " + this.value2);
+        console.log("Dice roll ended. Die 1: " + this.value1 + "\n                  Die 2: " + this.value2);
     },
 
     // Put both dice on Player 1's side

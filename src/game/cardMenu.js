@@ -33,7 +33,6 @@ game.createClass('CardMenu', {
             this.cards[i].sprite.mouseout = this.mouseOutCard.bind(this);
         }
 
-        console.log("i will shit bricks: " + game.MaxScore);
 
     },
 
@@ -112,7 +111,7 @@ game.createClass('CardMenu', {
 
         }
 
-        this.printCards();
+        //this.printCards();
     },
 
 
@@ -138,7 +137,7 @@ game.createClass('CardMenu', {
                 console.log("warning: \'Pass card\' not checked in \'isPlayable()\'");
                 break;
             default: 
-                console.log("error in \'isPlayable\': invalid card name");
+                console.log("error in \'isPlayable\': unsupported card name");
                 console.log("warning: returning \'false\'");
                 return this.returnValue;
         }
