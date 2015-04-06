@@ -16,6 +16,7 @@ game.HumanScore = 0;
 game.AiScore = 0;
 game.MaxScore = 5;
 game.Doubles = 0;
+game.DiceHideSpeed = 500;
 
 /*** Title screen ***/
 game.createScene('Main', {
@@ -121,6 +122,7 @@ game.createScene('Game', {
 
     playerDeck: null,
     hand: [],
+    canPlayCards: false,
 
     chip: null,
     chipZone: 0,
@@ -130,6 +132,8 @@ game.createScene('Game', {
     helpButton: null,
     rules: null,
     backButton: null,
+
+    _this: null,
 
     boardZone: [
         {zone: -11, ySpot: 60},
@@ -159,6 +163,8 @@ game.createScene('Game', {
 
     init: function() {
 
+        _this = this;
+
         var self = this;
         
         this.field = new game.Sprite('field').addTo(this.stage);
@@ -177,7 +183,7 @@ game.createScene('Game', {
             {delay: 400, easing: game.Tween.Easing.Quadratic.Out,
              onComplete: function() {
                  self.addObject(self.dice);
-                 self.showDice();
+                 self.showDice( function(){} );
              }
             }).start();
 
@@ -290,11 +296,20 @@ game.createScene('Game', {
 
     humanTurn: function() {
         console.log("start human turn");
+
         // Kickoff from center line
         if(this.kickoff)
         {
-            // Todo: enable input here
-            this.gamePhase = 2;
+            // Prevent clicks from doing anything
+            _this.gamePhase = -1;
+
+            // Give player 1 the dice
+            _this.dice.setPlayerPosition();
+            _this.showDice( function(){
+                _this.gamePhase = 1;
+            });
+
+            //this.gamePhase = 1;
             return;
         }
         // Non kickoff
@@ -308,7 +323,13 @@ game.createScene('Game', {
     },
 
     aiTurn: function() {
-        console.log("start ai turn");
+        console.log("start ai turn. Skipping...");
+
+        // Temporary until we start ai
+        // Skip over the ai turn
+        var i = 3;
+
+        _this.endTurn();   
 
     },
 
@@ -468,8 +489,6 @@ game.createScene('Game', {
             //       that figures which card, and does all the steps for that card.
             //       Will probably need numerous game phases for the different cards.
 
-            // Idea: set gamePhase = -1 so that when input is enabled, this
-            //       does nothing
             console.log("-----gamePhase 3-----");
 			if (this.turn == game.HUMAN)
 			{
@@ -485,46 +504,6 @@ game.createScene('Game', {
 			console.log("-----end gamePhase 3-----");
 		}
 		
-		// if (this.gamePhase == 3)
-		// {
-  //           console.log("-----gamePhase 3-----");
-		// 	if (this.turn == game.HUMAN) {
-		// 		if (this.dice.value1 == this.dice.value2)					
-		// 		{
-		// 			this.Doubles = 1;
-		// 		}
-		// 		else
-		// 		{
-		// 			this.Doubles = 0;
-		// 		}
-		// 		this.moveBall (Math.max(this.dice.value1, this.dice.value2) + this.Doubles);
-		// 		self.endTurn();
-		// 		//self.changeActivePlayer();
-		// 		if (this.dice.value1 == 1 || this.dice.value2 == 1)
-		// 		{
-		// 			self.changePossession()
-		// 		}
-		// 	}
-		// 	else if (this.turn == game.AI) {
-		// 		if (this.dice.value1 == this.dice.value2)					
-		// 		{
-		// 			this.Doubles = 1;
-		// 		}
-		// 		else
-		// 		{
-		// 			this.Doubles = 0;
-		// 		}
-		// 		this.moveBall (Math.max(this.dice.value1, this.dice.value2) + this.Doubles);
-		// 		self.endTurn();
-		// 		//self.changeActivePlayer();
-		// 		if (this.dice.value1 == 1 || this.dice.value2 == 1)
-		// 		{
-		// 			self.changePossession()
-		// 		}
-		// 	}
-		// 	this.gamePhase = 4;
-		// 	console.log("-----end gamePhase 3-----");
-		// }
 		
 
         /* Human Kickoff */
@@ -532,53 +511,52 @@ game.createScene('Game', {
 		{
             console.log("-----gamePhase 1-----");
 
-            // Todo: call centerBall() immediately after a goal score or kickoff etc; 
-            //       otherwise it won't center until it is time to kick it
-            this.centerBall();
-            this.updateBallTexture();
+            // If it is the AI's ball, a mistake was made
+            if(this.possession == game.AI) {
+                console.log("Error: AI possession during human kickoff");
+                _this.enableInput();
+                _this.gamePhase = 1;
+                return;
+            }
 
-			if (this.turn == game.HUMAN) {
-				this.rollDice("Player 1");
-			}
+            // Prevent re-entry
+            this.disableInput();
+            gamePhase = -1;
 
+            // Roll both dice
+            this.rollDice("Player 1", function() {
 
-            // Todo: move ai kickoff to its own function
-			else if (this.turn == game.AI) {
-                console.log("Oops! AI turn during gamePhase 1");
-				this.rollDice("Player 2");
-			}
-			this.gamePhase = 3;
-			console.log("-----end gamePhase 1-----");
+                // +1 to roll for doubles
+                if(self.dice.value1 == self.dice.value2)
+                {
+                    // Todo: message here for the +1 bonus?
+                    self.Doubles = 1;
+                } 
+                else 
+                {
+                    self.Doubles = 0;
+                }
+
+                // Move ball, then turnover if 1 rolled, then end turn
+                self.moveBall (Math.max(self.dice.value1, self.dice.value2) + self.Doubles, 
+                               function() {
+                                    self.kickoff = false;
+
+                                    // Turnover if 1 is rolled
+                                    if(self.dice.value1 == 1 || self.dice.value2 == 1)
+                                    {
+                                        self.changePossession();
+                                    }
+                                    self.endTurn();
+                               });
+
+            });
+
+            return;
+
 		}
 		
 
-  //       /* Initial rolloff result */
-		// if (this.gamePhase == 1)
-		// {
-  //           console.log("-----gamePhase 1-----");
-		// 	if (this.dice.value1 > this.dice.value2)
-		// 	{
-		// 		this.turn = game.HUMAN;
-		// 		this.possession = game.HUMAN;
-		// 		this.gamePhase = 2;
-		// 	}
-		// 	else if (this.dice.value2 > this.dice.value1)
-		// 	{
-  //               // Todo: AI turn must go here; else you have to click to start it
-  //               //       note: AI turn can be in a separate function, because it doesn't need clicks
-  //               //             from the user (except for defending goal attempts)
-		// 		this.turn = game.AI;
-		// 		this.possession = game.AI;
-
-  //               // May not need this line.. this is for the initial rolloff
-		// 		this.gamePhase = 2;
-		// 	}
-		// 	else
-		// 	{
-		// 		this.gamePhase = 0;
-		// 	}
-		// 	console.log("-----end gamePhase 1-----");
-		// }
 		
 
         /* Initial rolloff */
@@ -586,17 +564,18 @@ game.createScene('Game', {
 		{
             console.log("-----gamePhase 0-----");
 
-            // Prevent access of this function
-            //this.gamePhase = -1;
+            // Prevent re-access of this function
+            this.disableInput();
+            this.gamePhase = -1;
 
 			//Roll both dice, then evaluate the result
-            this.disableInput();
 			this.rollDice("Both", function() {
 
                     // Tie roll: prepare to reroll
                     if(self.dice.value1 === self.dice.value2) {
                         console.log("dice values: " + self.dice.value1 + ", " + self.dice.value2);
-                        self.enableInput();
+                        _this.enableInput();
+                        _this.gamePhase = 0;
                         return;
                     }
 
@@ -607,14 +586,19 @@ game.createScene('Game', {
                         self.turn = game.HUMAN;
                         self.possession = game.HUMAN;
                         self.updateBallTexture();
+                        self.kickoff = true;
 
-                        // Wait a bit, hide dice, then start player turn
+                        // Wait a moment, then hide the dice
                         self.addTimer(1000, function() { 
-                            self.hideDice( function(){self.humanTurn();} );
-                        });
-                        
-
+                            self.hideDice( function() {
+                                // After hiding dice, wait a moment and then start human turn
+                                self.addTimer(500, function() {
+                                    self.humanTurn();
+                                });
+                            });
+                        });                       
                     }
+
                     // AI wins the rolloff: start ai's turn
                     else if(self.dice.value1 < self.dice.value2) 
                     {
@@ -622,10 +606,16 @@ game.createScene('Game', {
                         self.turn = game.AI;
                         self.possession = game.AI;
                         self.updateBallTexture();
+                        self.kickoff = true;
 
-                        // Hide dice, then start ai turn
+                        // Wait a moment, then hide the dice
                         self.addTimer(1000, function() { 
-                            self.hideDice( function(){self.aiTurn();} );
+                            self.hideDice( function() {
+                                // After hiding dice, wait a moment and then start ai turn
+                                self.addTimer(500, function() {
+                                    self.aiTurn();
+                                });
+                            });
                         });
                     }
                 }
@@ -635,43 +625,41 @@ game.createScene('Game', {
 		}
     },
 
-    // Pass a function() in as 'callback' and it will execute after dice hide
     hideDice: function(callback) {
-        //this.disableInput();
-        this.dice.hide(callback);
+
+        _this.dice.hide();
+        // Use timer rather than passing callback to 'dice.hide()'
+        _this.addTimer(game.DiceHideSpeed, function() {
+            callback();
+        });
     },
 
-    showDice: function() {
-        this.disableInput();
-        this.dice.show();
 
-        var self = this;
-        if (this.turn == game.HUMAN) {
-            this.addTimer(500, function() {
-                self.enableInput();
-            });
-        }
+    showDice: function(callback) {
 
-        if (this.turn == game.AI) {
-            this.addTimer(1000, function() {
-                //self.rollDice("Player 2");
-				self.enableInput();
-            });
-        }
+        _this.disableInput();
+        _this.dice.show();
+
+        // Enable input after dice have shown
+        _this.addTimer(game.DiceHideSpeed, function() {
+            _this.enableInput();
+            callback();
+        });
+
+        
+
+
+        // var self = this;
+        // if (this.turn == game.HUMAN) {
+        //     this.addTimer(350, function() {
+        //     });
+        // }
+
+        // if (this.turn == game.AI) {
+        //     this.addTimer(700, function() {
+        //     });
+        // }
     },
-
-    // changeActivePlayer: function() {
-    //     if (this.turn === game.HUMAN) {
-    //         this.turn = game.AI;
-    //         //this.dice.setAiPosition();
-    //         //console.log("It is now the AI's turn.");
-    //     } else {
-    //         this.turn = game.HUMAN;
-    //         //this.dice.setPlayerPosition();
-    //         //console.log("It is now Player 1's turn.");
-    //     }
-    //     //this.showDice();
-    // },
 
     // Rolls dice for "Player 1", "Player 2", or "both"
     rollDice: function(whichPlayer, callback) {
@@ -696,9 +684,7 @@ game.createScene('Game', {
         var self = this;
         this.showMessage('Intercept', function() {
             self.possession = !self.possession;
-            //self.chip.setTexture(self.possession == game.HUMAN ? 'chip-home' : 'chip-away');
             self.updateBallTexture();
-            // remove endturn() from here
         });
     },
 
@@ -729,7 +715,7 @@ game.createScene('Game', {
         });
     },
 
-    moveBall: function(move) {
+    moveBall: function(move, callback) {
 
         var self = this;
         //var move = Math.max(this.dice.value1, this.dice.value2);
@@ -750,18 +736,11 @@ game.createScene('Game', {
             newpos = self.boardZone[self.chipZone + 11].ySpot;
         }
 
-        // Old board (with KickShot logo)
-        // if (this.chipZone > 0) {
-        //     newpos += 24 + (this.chipZone - 1) * 36;
-        // } else if (this.chipZone < 0) {
-        //     newpos += -24 + (this.chipZone + 1) * 36;
-        // }
-
         // Animation
         this.addTween(this.chip, {y: newpos}, 500, {
             easing: game.Tween.Easing.Quadratic.InOut,
             onComplete: function() {
-                // previously, endTurn() called here. Should be done by central control.
+                callback();
             }
         }).start();
     },
@@ -797,7 +776,6 @@ game.createScene('Game', {
     },
 
     goalShot: function() {
-        // Todo: check about sending null callback functions
         this.showMessage('GoalShot', function(){} );
     },
 
@@ -806,35 +784,24 @@ game.createScene('Game', {
     endTurn: function() {
         //console.log("EndingTurn");
         var self = this;
-        this.addTimer(1000, function() {
-            self.hideDice();
+        self.addTimer(1000, function() {
+            // Todo: hide the dice somewhere else
+            //  (only hide them after they are used, otherwise there is extra 1 sec pause here)
+            self.hideDice( function(){} );
             self.addTimer(1000, function() {
 
                 // Start the next turn
-                if (this.turn === game.HUMAN) {
-                    this.turn = game.AI;
-                    this.aiTurn();
+                if (self.turn === game.HUMAN) {
+                    self.turn = game.AI;
+                    self.aiTurn();
                 } else {
-                    this.turn = game.HUMAN;
-                    this.humanTurn();
+                    self.turn = game.HUMAN;
+                    self.humanTurn();
                 }
 
             });
         });
     },
-
-    // // Old endTurn function
-    // endTurn: function() {
-    //     console.log("EndingTurn");
-    //     var self = this;
-    //     this.addTimer(1000, function() {
-    //         self.hideDice();
-    //         self.addTimer(1000, function() {
-    //             self.changeActivePlayer();
-    //             //self.showDice();
-    //         });
-    //     });
-    // },
 	
 	scoreGoal: function() {
 		// New function made by Tessa 
@@ -872,50 +839,50 @@ game.createScene('Game', {
 			console.log("Goal test!");
     },
 	
-    oldscoreGoal: function() {
-        var self = this;
+    // oldscoreGoal: function() {
+    //     var self = this;
 
-        if (self.chipZone == 11) {
-            //game.audio.playSound('boo');
-        } else {
-            //game.audio.playSound('cheer');
-        }
+    //     if (self.chipZone == 11) {
+    //         //game.audio.playSound('boo');
+    //     } else {
+    //         //game.audio.playSound('cheer');
+    //     }
 
-        this.showMessage('Goal', function() {
-            var kickOffPlayer = false;
-            if (self.chipZone == 11) {
-                game.AiScore += 1;
-                kickOffPlayer = game.HUMAN;
-            }
-            if (self.chipZone == -11) {
-                game.HumanScore += 1;
-                kickOffPlayer = game.AI;
-            }
-            self.updateScore();
+    //     this.showMessage('Goal', function() {
+    //         var kickOffPlayer = false;
+    //         if (self.chipZone == 11) {
+    //             game.AiScore += 1;
+    //             kickOffPlayer = game.HUMAN;
+    //         }
+    //         if (self.chipZone == -11) {
+    //             game.HumanScore += 1;
+    //             kickOffPlayer = game.AI;
+    //         }
+    //         self.updateScore();
 
-            if (game.AiScore == game.MaxScore || game.HumanScore == game.MaxScore) {
-                self.showMessage('End', self.gameOver.bind(self));
-                return;
-            }
+    //         if (game.AiScore == game.MaxScore || game.HumanScore == game.MaxScore) {
+    //             self.showMessage('End', self.gameOver.bind(self));
+    //             return;
+    //         }
 
-            self.hideDice();
-            self.addTimer(1000, function() {
-                self.chipZone = 0;
-                self.chip.y = 516;
-                self.turn = kickOffPlayer;
-                if (kickOffPlayer == game.HUMAN) {
-                    self.dice.setPlayerPosition();
-                    self.possession = game.HUMAN;
-                    self.chip.setTexture('chip-home');
-                } else {
-                    self.dice.setAiPosition();
-                    self.possession = game.AI;
-                    self.chip.setTexture('chip-away');
-                }
-                self.showDice();
-            });
-        });
-    },
+    //         self.hideDice();
+    //         self.addTimer(1000, function() {
+    //             self.chipZone = 0;
+    //             self.chip.y = 516;
+    //             self.turn = kickOffPlayer;
+    //             if (kickOffPlayer == game.HUMAN) {
+    //                 self.dice.setPlayerPosition();
+    //                 self.possession = game.HUMAN;
+    //                 self.chip.setTexture('chip-home');
+    //             } else {
+    //                 self.dice.setAiPosition();
+    //                 self.possession = game.AI;
+    //                 self.chip.setTexture('chip-away');
+    //             }
+    //             self.showDice();
+    //         });
+    //     });
+    // },
 
     // Draw card from player's deck and puts in hand
     // ToDo: draw cards for computer
@@ -937,6 +904,7 @@ game.createScene('Game', {
         }
     },
 
+    // Todo: change messages
     showMessage: function(msgType, after) {
         var self = this;
         this.afterMessage = after;
@@ -960,6 +928,8 @@ game.createScene('Game', {
         }).start();
     },
 
+
+    // Todo: remake this
     gameOver: function() {
         var self = this;
         this.hideDice();

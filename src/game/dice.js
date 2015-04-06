@@ -33,15 +33,13 @@ game.createClass('Dice', {
     },
 
     show: function() {
-        game.scene.addTween(this.die1, {x: 150}, 500, { easing: game.Tween.Easing.Back.Out }).start();
-        game.scene.addTween(this.die2, {x: 150}, 500, { easing: game.Tween.Easing.Back.Out }).start();
+        game.scene.addTween(this.die1, {x: 150}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+        game.scene.addTween(this.die2, {x: 150}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
     },
 
-    hide: function(callback) {
-        game.scene.addTween(this.die1, {x: -this.die1.width}, 500, { easing: game.Tween.Easing.Back.In, 
-            onComplete: function() { callback(); }
-          }).start();
-        game.scene.addTween(this.die2, {x: -this.die2.width}, 500, { easing: game.Tween.Easing.Back.In }).start();
+    hide: function() {
+        game.scene.addTween(this.die1, {x: -this.die1.width}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.In }).start();
+        game.scene.addTween(this.die2, {x: -this.die2.width}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.In }).start();
     },
 
     roll: function(whichPlayer) {
@@ -69,11 +67,6 @@ game.createClass('Dice', {
                 break; 
         }
     },
-
-    // // Old dice rolling function
-    // roll: function() {
-    //     this.rolling = true;
-    // },
 
     stopRoll: function() {
         this.rolling = false;
