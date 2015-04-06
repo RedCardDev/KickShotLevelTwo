@@ -33,13 +33,13 @@ game.createClass('Dice', {
     },
 
     show: function() {
-        game.scene.addTween(this.die1, {x: 150}, 500, { easing: game.Tween.Easing.Back.Out }).start();
-        game.scene.addTween(this.die2, {x: 150}, 500, { easing: game.Tween.Easing.Back.Out }).start();
+        game.scene.addTween(this.die1, {x: 150}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+        game.scene.addTween(this.die2, {x: 150}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
     },
 
     hide: function() {
-        game.scene.addTween(this.die1, {x: -this.die1.width}, 500, { easing: game.Tween.Easing.Back.In }).start();
-        game.scene.addTween(this.die2, {x: -this.die2.width}, 500, { easing: game.Tween.Easing.Back.In }).start();
+        game.scene.addTween(this.die1, {x: -this.die1.width}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.In }).start();
+        game.scene.addTween(this.die2, {x: -this.die2.width}, game.DiceHideSpeed, { easing: game.Tween.Easing.Back.In }).start();
     },
 
     roll: function(whichPlayer) {
@@ -68,14 +68,9 @@ game.createClass('Dice', {
         }
     },
 
-    // // Old dice rolling function
-    // roll: function() {
-    //     this.rolling = true;
-    // },
-
     stopRoll: function() {
         this.rolling = false;
-        console.log("Dice rolled. Die 1: " + this.value1 + "\n              Die 2: " + this.value2);
+        console.log("Dice roll ended. Die 1: " + this.value1 + "\n                  Die 2: " + this.value2);
     },
 
     // Put both dice on Player 1's side

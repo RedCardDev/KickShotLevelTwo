@@ -24,9 +24,6 @@ game.createClass('CardMenu', {
 
             this.cards[i].sprite.interactive = true;
 
-            // Click/tap
-            //this.cards[i].sprite.click = this.cards[i].sprite.tap = this.clickedCard.bind(this);
-            
             // Mouse over
             // this.cards[i].sprite.mouseover = this.mouseOverCard.bind(this.cards[i].sprite);
             this.cards[i].sprite.mouseover = this.mouseOverCard.bind(this);
@@ -37,14 +34,6 @@ game.createClass('CardMenu', {
         }
 
 
-        // Brute force card clicks
-        this.cards[0].sprite.click = this.cards[0].sprite.tap = this.clickCard0.bind(this);
-        this.cards[1].sprite.click = this.cards[1].sprite.tap = this.clickCard1.bind(this);
-        this.cards[2].sprite.click = this.cards[2].sprite.tap = this.clickCard2.bind(this);
-        this.cards[3].sprite.click = this.cards[3].sprite.tap = this.clickCard3.bind(this);
-        this.cards[4].sprite.click = this.cards[4].sprite.tap = this.clickCard4.bind(this);
-        this.cards[5].sprite.click = this.cards[5].sprite.tap = this.clickCard5.bind(this);
-
     },
 
     mouseOutCard: function(mousedata) {
@@ -54,25 +43,6 @@ game.createClass('CardMenu', {
 
     },
 
-
-    clickCard0: function(mousedata) { 
-        console.log("Clicked card \"" + this.cards[0].name + "\" at index [0]");
-    },
-    clickCard1: function(mousedata) { 
-        console.log("Clicked card \"" + this.cards[1].name + "\" at index [1]");
-    },
-    clickCard2: function(mousedata) { 
-        console.log("Clicked card \"" + this.cards[2].name + "\" at index [2]");
-    },
-    clickCard3: function(mousedata) { 
-        console.log("Clicked card \"" + this.cards[3].name + "\" at index [3]");
-    },
-    clickCard4: function(mousedata) { 
-        console.log("Clicked card \"" + this.cards[4].name + "\" at index [4]");
-    },
-    clickCard5: function(mousedata) { 
-        console.log("Clicked card \"" + this.cards[5].name + "\" at index [5]");
-    },
 
     mouseOverCard: function(mousedata) {
 
@@ -141,17 +111,35 @@ game.createClass('CardMenu', {
 
         }
 
-        this.printCards();
+        //this.printCards();
     },
 
 
 
-    isPlayable: function(cardName, currentTurn, currentPossession, ballZone) {
+    isPlayable: function(cardName, currentPlayer, currentPossession, ballZone) {
+
+        returnValue: false;
+
         switch (cardName) {
-            //Todo: Add away card
+
+            // Intercept
             case("Intercept_Home"):
-                console.log("checking Intercept_Home card....\n\n");
+            case("Intercept_Away"):
+                // Return true if the current Player does not have the ball
+                currentPlayer != currentPossession ? returnValue = true : returnValue = false;
+                console.log("Card \'" + cardName + "\' isPlayable == " + returnValue);
+                return returnValue;
                 break;
+
+            // Pass
+            // warning: this card is not actually checked yet
+            case("Pass_Home"):
+                console.log("warning: \'Pass card\' not checked in \'isPlayable()\'");
+                break;
+            default: 
+                console.log("error in \'isPlayable\': unsupported card name");
+                console.log("warning: returning \'false\'");
+                return this.returnValue;
         }
     },
     
