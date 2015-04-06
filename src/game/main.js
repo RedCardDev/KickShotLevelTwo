@@ -183,7 +183,7 @@ game.createScene('Game', {
             {delay: 400, easing: game.Tween.Easing.Quadratic.Out,
              onComplete: function() {
                  self.addObject(self.dice);
-                 self.showDice( function(){} );
+                 self.showDice( function(){ _this.enableInput();} );
              }
             }).start();
 
@@ -307,6 +307,7 @@ game.createScene('Game', {
             _this.dice.setPlayerPosition();
             _this.showDice( function(){
                 _this.gamePhase = 1;
+                _this.enableInput();
             });
 
             //this.gamePhase = 1;
@@ -323,13 +324,24 @@ game.createScene('Game', {
     },
 
     aiTurn: function() {
-        console.log("start ai turn. Skipping...");
+        console.log("start ai turn");
 
-        // Temporary until we start ai
-        // Skip over the ai turn
-        var i = 3;
+        // Kickoff from center line
+        if(_this.kickoff)
+        {
+            _this.aiKickoff();
+        }
+        else
+        {
+            // Temporary until we start ai
+            // Skip over the ai turn
+            console.log("skipping...");
 
-        _this.endTurn();   
+            _this.endTurn(); 
+        }
+
+
+          
 
     },
 
@@ -541,6 +553,7 @@ game.createScene('Game', {
                 self.moveBall (Math.max(self.dice.value1, self.dice.value2) + self.Doubles, 
                                function() {
                                     self.kickoff = false;
+                                    _this.Doubles = 0;
 
                                     // Turnover if 1 is rolled
                                     if(self.dice.value1 == 1 || self.dice.value2 == 1)
@@ -565,8 +578,8 @@ game.createScene('Game', {
             console.log("-----gamePhase 0-----");
 
             // Prevent re-access of this function
-            this.disableInput();
-            this.gamePhase = -1;
+            _this.disableInput();
+            _this.gamePhase = -1;
 
 			//Roll both dice, then evaluate the result
 			this.rollDice("Both", function() {
@@ -625,6 +638,61 @@ game.createScene('Game', {
 		}
     },
 
+    /* AI functions */
+
+    aiKickoff: function(callback) {
+        _this.gamePhase = -1;
+        _this.kickoff = false;
+
+            // Give player 1 the dice
+            _this.dice.setPlayerPosition();
+            _this.showDice( function(){
+                _this.gamePhase = 1;
+            });
+
+
+
+        _this.dice.setAiPosition();
+        _this.showDice( function(){
+            _this.rollDice("Player 2", function(){
+                // Calculate outcome of dice roll
+
+                // +1 to roll for doubles
+                if(_this.dice.value1 == _this.dice.value2)
+                {
+                    // Todo: message here for the +1 bonus
+                    _this.Doubles = 1;
+                } 
+                else 
+                {
+                    _this.Doubles = 0;
+                }
+
+                // Move ball, then turnover if 1 rolled, then end turn
+                _this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, 
+                               function() {
+                                    _this.Doubles = 0;
+                                    
+                                    // Turnover if 1 is rolled
+                                    if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+                                    {
+                                        _this.changePossession();
+                                    }
+                                    _this.endTurn();
+                               });
+
+
+
+            });
+        });
+    },
+
+
+
+
+
+
+
     hideDice: function(callback) {
 
         _this.dice.hide();
@@ -642,7 +710,7 @@ game.createScene('Game', {
 
         // Enable input after dice have shown
         _this.addTimer(game.DiceHideSpeed, function() {
-            _this.enableInput();
+            //_this.enableInput();
             callback();
         });
 
