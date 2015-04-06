@@ -1057,7 +1057,22 @@ game.createScene('Game', {
     clickCard5: function(mousedata) { 
         console.log("clicked card 5");
         this.testPlayable(this.cardMenu.cards[5].name);
-    }
+    },
+	
+	displayMessageSprite: function(spritename){
+		console.log("in the displayMessageSprite function");
+		this.activeSprite = new game.Sprite(spritename).addTo(this.stage);
+		this.activeSprite.anchor.set(0.5, 0.5);
+        this.activeSprite.center();
+        this.activeSprite.x = 0;
+        this.activeSprite.scale.set(1.75, 1.75);
+		
+		var self = this;
+
+		game.scene.addTween(this.activeSprite, {x: 350}, 500, { easing: game.Tween.Easing.Back.Out }).start();
+		//this.activeSprite.x = 400;
+		game.scene.addTween(this.activeSprite, {x: -this.activeSprite.width}, 500, {delay: 600, easing: game.Tween.Easing.Back.In}).start();
+	}
     
 
 
