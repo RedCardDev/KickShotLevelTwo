@@ -290,46 +290,7 @@ game.createScene('Game', {
             return;
         }
 		
-		if (this.gamePhase == 9) // pass goal test
-		{	
-			if (self.chipZone == 11)
-			{
-				if (this.dice.value1 > this.dice.value2)
-				{
-					this.scoreGoal();
-				}
-				else if (this.dice.value2 > this.dice.value1)
-				{
-					this.gamePhase = 7;
-					// No goal
-					// I don't remember the rules here
-				}
-				else
-				{
-					this.gamePhase = 9;
-					this.rollDice("Both");
-				}
-			}
-			
-			if (self.chipZone == -11)
-			{
-				if (this.dice.value1 < this.dice.value2)
-				{
-					this.scoreGoal();
-				}
-				else if (this.dice.value2 < this.dice.value1)
-				{
-					this.gamePhase = 7;
-					// No Goal
-					// I don't remember the rules here
-				}
-				else
-				{
-					this.gamePhase = 9;
-					this.rollDice("Both");
-				}
-			}
-		}
+				
 		if (this.gamePhase == 7)
 		{
             console.log("-----gamePhase 7-----");
@@ -352,7 +313,6 @@ game.createScene('Game', {
 				if (this.possession == game.HUMAN)
 				{
 					// Pass
-					// if (card == pass)
 					if (this.dice.value1 == this.dice.value2)					
 					{
 						this.Doubles = 1;
@@ -421,9 +381,7 @@ game.createScene('Game', {
 			}
 			if (self.chipZone == 11 || self.chipZone == -11) // this if clause was added by Tessa 
 			{ 
-				//this.scoreGoal();
-				this.gamePhase = 9;
-				this.rollDice("Both");
+				this.scoreGoal();
 			}else{	
 				this.gamePhase = 7;
 				console.log("No Goal test!");
@@ -436,8 +394,7 @@ game.createScene('Game', {
             console.log("-----gamePhase 5-----");
 			if (this.turn == game.HUMAN)
 			{
-				//Choose Card
-				if (this.possession == game.HUMAN) // if (card == pass)
+				if (this.possession == game.HUMAN)
 				{
 					// Pass
 					console.log("Player Pass");
@@ -452,7 +409,6 @@ game.createScene('Game', {
 			}
 			else
 			{
-				// AI Choose Card
 				if (this.possession == game.AI)
 				{
 					// Pass
