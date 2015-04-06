@@ -135,6 +135,8 @@ game.createScene('Game', {
 
     _this: null,
 
+	activeSprite: null,
+	
     boardZone: [
         {zone: -11, ySpot: 60},
         {zone: -10, ySpot: 99},
