@@ -31,6 +31,8 @@ game.createScene('Main', {
     charSprite: null,
     charIndex: 0,
 
+    inPlayClick: false,
+
     init: function() {
 
         this.title = new game.Sprite('title').addTo(this.stage);
@@ -61,6 +63,13 @@ game.createScene('Main', {
     },
 
     playClick: function() {
+        /* Return if this function is already running */
+        if(this.inPlayClick){
+            return;
+        }
+
+        this.inPlayClick = true;
+
         // stop character tween
         game.tweenEngine.stopTweensForObject(this.charSprite);
         this.addTween(this.charSprite, {x: -200}, 400, {delay: 50, easing: game.Tween.Easing.Back.In}).start();
@@ -69,7 +78,8 @@ game.createScene('Main', {
         this.addTween(this.playButton, {x: -200}, 400,
             {delay: 250, easing: game.Tween.Easing.Back.In,
              onComplete: function() {
-                 game.system.setScene('Game');
+                this.inPlayClick = false;
+                game.system.setScene('Game');
              }}).start();
         this.addTween(this.webButton, {x: game.system.width + 200}, 400, {delay: 250, easing: game.Tween.Easing.Back.In}).start();
     },
