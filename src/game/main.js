@@ -136,6 +136,7 @@ game.createScene('Game', {
     _this: null,
 
 	activeSprite: null,
+    messageText: null,
 	
     boardZone: [
         {zone: -11, ySpot: 60},
@@ -258,6 +259,11 @@ game.createScene('Game', {
         this.message.center();
         this.message.y = -game.system.height / 2;
         this.afterMessage = this.hideMessage.bind(this);
+
+        /* Message text */
+        this.messageText = new game.BitmapText('longest block of text we need', { font: 'Foo' , align: 'center' }).addTo(this.stage);
+        this.messageText.visible = true;
+        this.messageText.position.set(-this.messageText.textWidth, 585);
 
         game.HumanScore = 0;
         game.AiScore = 0;
@@ -579,6 +585,8 @@ game.createScene('Game', {
 		{
             console.log("-----gamePhase 0-----");
 
+            // _this.displayMessageSprite("     test", function(){ console.log("Message done. This print is in the callback");} );
+
             // Prevent re-access of this function
             _this.disableInput();
             _this.gamePhase = -1;
@@ -603,6 +611,8 @@ game.createScene('Game', {
                         self.updateBallTexture();
                         self.kickoff = true;
 
+                        _this.displayMessageSprite("             You go first!", function(){} );
+
                         // Wait a moment, then hide the dice
                         self.addTimer(1000, function() { 
                             self.hideDice( function() {
@@ -622,6 +632,8 @@ game.createScene('Game', {
                         self.possession = game.AI;
                         self.updateBallTexture();
                         self.kickoff = true;
+
+                        _this.displayMessageSprite("       Computer goes first!", function(){} );
 
                         // Wait a moment, then hide the dice
                         self.addTimer(1000, function() { 
@@ -1061,19 +1073,43 @@ game.createScene('Game', {
         this.testPlayable(this.cardMenu.cards[5].name);
     },
 	
-	displayMessageSprite: function(spritename){
-		console.log("in the displayMessageSprite function");
-		this.activeSprite = new game.Sprite(spritename).addTo(this.stage);
-		this.activeSprite.anchor.set(0.5, 0.5);
-        this.activeSprite.center();
-        this.activeSprite.x = 0;
-        this.activeSprite.scale.set(1.75, 1.75);
-		
-		var self = this;
+    /* Slide text message across screen */
+	displayMessageSprite: function(spritename, callback){
 
-		game.scene.addTween(this.activeSprite, {x: 350}, 500, { easing: game.Tween.Easing.Back.Out }).start();
-		//this.activeSprite.x = 400;
-		game.scene.addTween(this.activeSprite, {x: -this.activeSprite.width}, 500, {delay: 600, easing: game.Tween.Easing.Back.In}).start();
+        /* Return if a message is already being displayed */ 
+        if(_this.inMessage){
+            console.log("Error in 'displayMessageSprite': cannot show message '" + spritename + "', already showing a message!");
+            return;
+        }
+
+        /* Set this global to show that a message is being displayed */
+        _this.inMessage = true;
+
+        /* Position message to left of screen */
+        _this.messageText.x = -_this.messageText.textWidth;
+
+        /* Update message text */
+        _this.messageText.setText(spritename);
+
+        /* Show the message. Run callback() after message is done */
+        _this.addTween(_this.messageText, {x: (game.system.width / 2 - _this.messageText.textWidth / 2)}, 600,
+                    {delay:50, easing: game.Tween.Easing.Back.Out, onComplete: function() {
+                        _this.addTween(_this.messageText, {x: game.system.width + 50}, 600,
+                            {delay:1000, easing: game.Tween.Easing.Back.In, onComplete: function() {
+                                callback();
+                                _this.inMessage = false;} 
+                            }).start();
+                    }}).start();
+
+
+        // Todo: update this to use sprites if Aziz doesn't like the text
+
+        /* Code for using sprite instead of text */
+        // this.activeSprite = new game.Sprite(spritename).addTo(this.stage);
+        // this.activeSprite.anchor.set(0.5, 0.5);
+        // this.activeSprite.center();
+        // this.activeSprite.x = 0;
+        // this.activeSprite.scale.set(1.75, 1.75);
 	}
     
 
