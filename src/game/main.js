@@ -131,8 +131,11 @@ game.createScene('Game', {
     possession: game.HUMAN,
 
     playerDeck: null,
-    hand: [],
+    playerHand: [],
     canPlayCards: false,
+
+    aiDeck: null,
+    aiHand: [],
 
     chip: null,
     chipZone: 0,
@@ -180,6 +183,7 @@ game.createScene('Game', {
 
         var self = this;
         
+        /* Add the playing field */
         this.field = new game.Sprite('field').addTo(this.stage);
         this.field.x = 0;
         this.field.y = -this.field.height;
@@ -187,6 +191,7 @@ game.createScene('Game', {
         this.field.click = this.field.tap = this.fieldClick.bind(this);
         this.addTween(this.field, {y: 0}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
 
+        /* Add the ball */
         this.chip = new game.Sprite('chip-home').addTo(this.stage);
         this.chip.scale.x = this.chip.scale.y = 0.7;
         this.chip.anchor.set(0.5, 0.5);
@@ -200,10 +205,13 @@ game.createScene('Game', {
              }
             }).start();
 
+        /* Create the dice */
         this.dice = new game.Dice();
 
+        /* Create a cardMenu for the player */
         this.cardMenu = new game.CardMenu();
 
+        /* Enable the cards to be clicked */
         this.cardMenu.cards[0].sprite.click = this.clickCard0.bind(this);
         this.cardMenu.cards[1].sprite.click = this.clickCard1.bind(this);
         this.cardMenu.cards[2].sprite.click = this.clickCard2.bind(this);
@@ -211,19 +219,32 @@ game.createScene('Game', {
         this.cardMenu.cards[4].sprite.click = this.clickCard4.bind(this);
         this.cardMenu.cards[5].sprite.click = this.clickCard5.bind(this);
 
-
+        /* Create a deck of cards for the player */
         this.playerDeck = new game.Deck("home");
         //this.playerDeck.printDeck();
 
-        this.drawCard();
-        this.drawCard();
-        this.drawCard();
-        this.drawCard();
-        this.drawCard();
-        this.drawCard();
+        /* Draw player's starting hand */
+        this.drawCard("Player 1");
+        this.drawCard("Player 1");
+        this.drawCard("Player 1");
+        this.drawCard("Player 1");
+        this.drawCard("Player 1");
+        this.drawCard("Player 1");
 
-        this.cardMenu.updateCards(this.hand);
+        /* Create a deck of cards for the computer */
+        this.aiDeck = new game.Deck("away");
+        // this.aiDeck.printDeck();
 
+        /* Draw computer's starting hand */
+        this.drawCard("AI");
+        this.drawCard("AI");
+        this.drawCard("AI");
+        this.drawCard("AI");
+        this.drawCard("AI");
+        this.drawCard("AI");
+
+
+        this.cardMenu.updateCards(this.playerHand);
 
 
 
@@ -234,6 +255,7 @@ game.createScene('Game', {
         this.addTween(this.aiScoreText, {y: 50}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
         this.addTween(this.humanScoreText, {y: 850}, 600, { delay: 400, easing: game.Tween.Easing.Quadratic.Out }).start();
 
+        /* Add the help button */
         this.helpButton = new game.Sprite('help').addTo(this.stage);
         this.helpButton.anchor.set(0.5, 0.5);
         this.helpButton.scale.set(0.5, 0.5);
@@ -243,6 +265,7 @@ game.createScene('Game', {
         this.helpButton.click = this.helpButton.tap = this.helpClick.bind(this);
         this.addTween(this.helpButton, {y: 90}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
 
+        /* Add the back button */
         this.backButton = new game.Sprite('close').addTo(this.stage);
         this.backButton.anchor.set(0.5, 0.5);
         this.backButton.scale.set(0.5, 0.5);
@@ -252,6 +275,7 @@ game.createScene('Game', {
         this.backButton.click = this.backButton.tap = this.backClick.bind(this);
         this.addTween(this.backButton, {y: 165}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
 
+        // Todo: get rid of rules--they are for the Level 1 version of the game
         this.rules = new game.Sprite('rules').addTo(this.stage);
         this.rules.x = -640;
         this.rules.y = 0;
@@ -662,7 +686,7 @@ game.createScene('Game', {
 		}
     },
 
-    /* AI functions */
+    /******** AI functions ********/
 
     aiKickoff: function(callback) {
         _this.gamePhase = -1;
@@ -737,20 +761,6 @@ game.createScene('Game', {
             //_this.enableInput();
             callback();
         });
-
-        
-
-
-        // var self = this;
-        // if (this.turn == game.HUMAN) {
-        //     this.addTimer(350, function() {
-        //     });
-        // }
-
-        // if (this.turn == game.AI) {
-        //     this.addTimer(700, function() {
-        //     });
-        // }
     },
 
     // Rolls dice for "Player 1", "Player 2", or "both"
@@ -976,27 +986,54 @@ game.createScene('Game', {
     //     });
     // },
 
-    // Draw card from player's deck and puts in hand
-    // ToDo: draw cards for computer
-    drawCard: function() {
-        if(this.hand.length <= 6){
-            this.hand.push( this.playerDeck.draw() );      
-        } else {
-            console.log("Can't draw a card for player 1, already too many cards in hand");
+    // Draw card from the deck and put in hand
+    // ToDo: handle empty deck
+    // Todo: handle hand with <6 cards
+    drawCard: function(whichplayer) {
+        whichplayer = whichplayer.toUpperCase();
+
+        switch(whichplayer) {
+
+            case "PLAYER":
+            case "PLAYER 1":
+            case "HUMAN": 
+
+                if(this.playerHand.length <= 6){
+                    this.playerHand.push( this.playerDeck.draw() );      
+                }else{
+                    console.log("Can't draw a card for player 1, already too many cards in their hand");
+                }
+                break;
+
+            case "AI":
+            case "COMPUTER":
+            case "PLAYER 2":
+
+                if(this.aiHand.length <= 6){
+                    this.aiHand.push( this.aiDeck.draw() );      
+                }else{
+                    console.log("Can't draw a card for ai, already too many cards in its hand");
+                }
+                break;
+
+            default:
+                console.log("Error in 'drawCard': invalid parameter. Please use a name that works.");
+                break; 
         }
-        
+ 
     },
 
     // Print contents of "hand" for debugging
-    printHand: function() {
-        console.log("Printing contents of \"hand\"...");
+    printPlayerHand: function() {
+        console.log("Printing contents of \"playerHand\"...");
 
         for(var i = 0; i < 6; i++){
-            console.log("Hand[" + i + "]: " + this.hand[i]);
+            console.log("Hand[" + i + "]: " + this.playerHand[i]);
         }
     },
 
-    // Todo: change messages
+    /* show a sprite, from top to bottom of screen */
+    // Todo: adapt this to show a played card; but use text messages for everything else
     showMessage: function(msgType, after) {
         var self = this;
         this.afterMessage = after;
@@ -1084,11 +1121,11 @@ game.createScene('Game', {
     },
 	
     /* Slide text message across screen */
-	displayMessageSprite: function(spritename, callback){
+	displayMessageSprite: function(messageString, callback){
 
         /* Return if a message is already being displayed */ 
         if(_this.inMessage){
-            console.log("Error in 'displayMessageSprite': cannot show message '" + spritename + "', already showing a message!");
+            console.log("Error in 'displayMessageSprite': cannot show message '" + messageString + "', already showing a message!");
             return;
         }
 
@@ -1098,8 +1135,8 @@ game.createScene('Game', {
         /* Position message to left of screen */
         _this.messageText.x = -_this.messageText.textWidth;
 
-        /* Update message text */
-        _this.messageText.setText(spritename);
+        /* Update the text */
+        _this.messageText.setText(messageString);
 
         /* Show the message. Run callback() after message is done */
         _this.addTween(_this.messageText, {x: (game.system.width / 2 - _this.messageText.textWidth / 2)}, 600,
