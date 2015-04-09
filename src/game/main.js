@@ -210,7 +210,9 @@ game.createScene('Game', {
 
         /* Create a cardMenu for the player */
         this.cardMenu = new game.CardMenu();
-
+		
+		this.cardMenu.skipButton.sprite.click =  this.skipClick.bind(this);
+		
         /* Enable the cards to be clicked */
         this.cardMenu.cards[0].sprite.click = this.clickCard0.bind(this);
         this.cardMenu.cards[1].sprite.click = this.clickCard1.bind(this);
@@ -1092,7 +1094,10 @@ game.createScene('Game', {
         return this.cardMenu.isPlayable(cardName, this.turn, this.possession, this.chipZone);
     },
 
-
+	skipClick: function(mousedata){
+		console.log("clicked on skip");
+		this.endTurn();
+	},
 
     /* Card Menu clicks */
     clickCard0: function(mousedata) { 
