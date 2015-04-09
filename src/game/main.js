@@ -12,13 +12,11 @@ game.module(
 
 game.HUMAN = true;
 game.AI = false;
-game.GoalAttempt = -1;
 game.HumanScore = 0;
 game.AiScore = 0;
 game.MaxScore = 5;
 game.Doubles = 0;
 game.DiceHideSpeed = 500;
-game.CardHideSpeed = 500;
 
 /*** Title screen ***/
 game.createScene('Main', {
@@ -364,7 +362,6 @@ game.createScene('Game', {
         {
             // todo: enable input here
             // Let player select a card
-			_this.showHand();
             this.gamePhase = 3;
             return;
         }
@@ -553,7 +550,6 @@ game.createScene('Game', {
 			{
 				//Open Card Menu
 				console.log("Card Menu");
-				self.showHand();
 			}
             // Todo: Move ai card choice to its own function
 			else{
@@ -630,7 +626,6 @@ game.createScene('Game', {
             // Prevent re-access of this function
             _this.disableInput();
             _this.gamePhase = -1;
-			self.hideHand();
 
 			//Roll both dice, then evaluate the result
 			this.rollDice("Both", function() {
@@ -785,20 +780,6 @@ game.createScene('Game', {
                 //self.enableInput();
                 callback();
             });
-        });
-    },
-	
-	showHand: function(callback) {
-
-        _this.cardMenu.showCards();
-        _this.addTimer(game.CardHideSpeed, function() {
-        });
-    },
-	
-	hideHand: function(callback) {
-
-        _this.cardMenu.hideCards();
-        _this.addTimer(game.CardHideSpeed, function() {
         });
     },
 
@@ -1183,90 +1164,7 @@ game.createScene('Game', {
         // this.activeSprite.scale.set(1.75, 1.75);
 	}
     
-	playerPass : function()
-	{
-		_this.dice.setPlayerPosition();
-        _this.showDice( function(){
-            _this.rollDice("Player 1", function(){
 
-			if(_this.dice.value1 == _this.dice.value2)
-			{
-				// Todo: message here for the +1 bonus
-				_this.Doubles = 1;
-			} 
-			else 
-			{
-				_this.Doubles = 0;
-			}
-
-			// Move ball, then turnover if 1 rolled, then end turn
-			_this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
-				_this.Doubles = 0;
-				
-				if (_this.chipZone == 11)
-				{
-					this.rollDice("Both", function() {
-
-
-                    // Human wins the rolloff: start human's turn
-                    if (self.dice.value2 > self.dice.value1) 
-                    {
-                        _this.ScoreGoal();
-                    }
-				}
-				
-				// Turnover if 1 is rolled
-				if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
-				{
-					_this.changePossession();
-				}
-				_this.endTurn();
-		   });
-		});
-	}
-	
-	playerIntercept()
-	{
-		_this.dice.setPlayerPosition();
-        _this.showDice( function(){
-		_this.rollDice("Player 1", function(){
-
-		if(_this.dice.value1 == _this.dice.value2 && _this.dice.value1 != 1)
-		{
-			_this.changePossession();
-		} 
-		_this.endTurn();
-	}
-	
-	playerGoalShot(Direction)
-	{
-		_this.dice.setPlayerPosition();
-        _this.showDice( function(){
-		_this.rollDice("Player 1", function(){
-
-		if(_this.dice.value1 == _this.dice.value2)
-		{
-			// Todo: message here for the +1 bonus
-			_this.Doubles = 1;
-		} 
-		else 
-		{
-			_this.Doubles = 0;
-		}
-
-		// Move ball, then turnover if 1 rolled, then end turn
-		_this.moveBall (_this.dice.value1 + _this.dice.value2 + _this.Doubles, function() {
-		_this.Doubles = 0;
-		if (_this.chipZone == 11)
-		{
-			GoalAttempt = Direction;
-		}
-		else
-		{
-			_this.changePossession();
-		}
-		_this.endTurn();
-	}
 
 
 
