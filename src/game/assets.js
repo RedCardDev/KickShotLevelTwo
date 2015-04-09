@@ -62,6 +62,4 @@ game.addAsset('images/rules_level_one.png', "rules");
 
 game.addAsset('fonts/foo.fnt');
 
-game.addAsset('images/placeholderskip.png', 'skipover');
-game.addAsset('images/placeholderskippressed.png', 'skip');
 });
