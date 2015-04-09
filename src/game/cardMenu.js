@@ -12,11 +12,16 @@ game.createClass('CardMenu', {
         {name: 'close', sprite: null},
         {name: 'close', sprite: null}
         ],
-
+	skipButton: {name: 'skip', sprite: null},
     //highlightedCard: -1,
 
     init: function() {
-
+		this.skipButton.sprite = new game.Sprite('skip').addTo(game.scene.stage);
+		this.skipButton.sprite.scale.x = this.skipButton.sprite.scale.y = 0.49;
+		this.skipButton.sprite.interactive = true;
+		this.skipButton.sprite.mouseover = this.mouseOverSkip.bind(this);
+		this.skipButton.sprite.mouseout = this.mouseOutSkip.bind(this);
+		this.skipButton.sprite.position.set( this.skipButton.sprite.y + 9, game.system.height/2 -140);
         // Add a sprite to the game for each card
         for(var i = 0; i < this.cards.length; i++){
             this.cards[i].sprite = new game.Sprite(this.cards[i].name).addTo(game.scene.stage);
@@ -84,8 +89,20 @@ game.createClass('CardMenu', {
 		// else
 		// 	console.log("6");
   //   },
+	 mouseOverSkip: function(mousedata) {
+		mousedata.target.setTexture('skipover');
+        mousedata.target.scale.x = mousedata.target.scale.y = 0.5;
+        //mousedata.target.position.y -= 500;
+		
+    },
 
+	mouseOutSkip: function(mousedata) {
+		mousedata.target.setTexture('skip');
+        mousedata.target.scale.x = mousedata.target.scale.y = 0.49;
+        //mousedata.target.position.y = game.system.height - this.cards[0].sprite.height*0.15;
+        //mousedata.target.position.y += 500;
 
+    },
    
     // Update the cards to match cards in hand
     updateCards: function(cardsInHand) {
