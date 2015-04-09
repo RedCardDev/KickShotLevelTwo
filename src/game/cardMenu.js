@@ -130,6 +130,30 @@ game.createClass('CardMenu', {
 
         //this.printCards();
     },
+	
+	hideCard: function(cardNumber)
+	{
+	  game.scene.addTween(this.cards[cardNumber].sprite, {y: game.system.height}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+	},
+	
+	hideCards: function()
+	{
+		for(var i = 0; i < 6; i++) {
+			game.scene.addTween(this.cards[i].sprite, {y: game.system.height}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+		}
+	},
+	
+	showCard: function(cardNumber)
+	{
+	  game.scene.addTween(this.cards[cardNumber].sprite, {y: game.system.height - 50}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+	},
+	
+	showCards: function()
+	{
+		for(var i = 0; i < 6; i++) {
+			game.scene.addTween(this.cards[i].sprite, {y: game.system.height - 50}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+		}
+	},
 
 
 
