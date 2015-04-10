@@ -1181,92 +1181,99 @@ game.createScene('Game', {
         // this.activeSprite.center();
         // this.activeSprite.x = 0;
         // this.activeSprite.scale.set(1.75, 1.75);
-	}
+	},
     
-	playerPass : function()
+	playerPass: function()
 	{
 		_this.dice.setPlayerPosition();
         _this.showDice( function(){
             _this.rollDice("Player 1", function(){
 
-			if(_this.dice.value1 == _this.dice.value2)
-			{
-				// Todo: message here for the +1 bonus
-				_this.Doubles = 1;
-			} 
-			else 
-			{
-				_this.Doubles = 0;
-			}
+    			if(_this.dice.value1 == _this.dice.value2)
+    			{
+    				// Todo: message here for the +1 bonus
+    				_this.Doubles = 1;
+    			} 
+    			else 
+    			{
+    				_this.Doubles = 0;
+    			}
 
-			// Move ball, then turnover if 1 rolled, then end turn
-			_this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
-				_this.Doubles = 0;
-				
-				if (_this.chipZone == 11)
-				{
-					this.rollDice("Both", function() {
+    			// Move ball, then turnover if 1 rolled, then end turn
+    			_this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
+    				_this.Doubles = 0;
+    				
+                    /* Pass in goal attempt */
+    				if (_this.chipZone == 11)
+    				{
+    					this.rollDice("Both", function() {
 
-
-                    // Human wins the rolloff: start human's turn
-                    if (self.dice.value2 > self.dice.value1) 
-                    {
-                        _this.ScoreGoal();
-                    }
-				}
-				
-				// Turnover if 1 is rolled
-				if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
-				{
-					_this.changePossession();
-				}
-				_this.endTurn();
-		   });
-		});
-	}
+                            // Human wins the rolloff: start human's turn
+                            if (self.dice.value2 > self.dice.value1) 
+                            {
+                                _this.ScoreGoal();
+                            }
+                        });
+    				}
+    				
+    				// Turnover if 1 is rolled
+                    // Todo: turnover on pass in goal attempt?
+    				if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+    				{
+    					_this.changePossession();
+    				}
+    				_this.endTurn();
+    		    });
+		    });
+        });
+	},
 	
-	playerIntercept()
+	playerIntercept: function()
 	{
 		_this.dice.setPlayerPosition();
         _this.showDice( function(){
-		_this.rollDice("Player 1", function(){
-
-		if(_this.dice.value1 == _this.dice.value2 && _this.dice.value1 != 1)
-		{
-			_this.changePossession();
-		} 
-		_this.endTurn();
-	}
+    		_this.rollDice("Player 1", function() {
+        		if(_this.dice.value1 == _this.dice.value2 && _this.dice.value1 != 1)
+        		{
+        			_this.changePossession();
+        		} 
+        		_this.endTurn();
+            });
+        });
+	},
 	
-	playerGoalShot(Direction)
+	playerGoalShot: function(Direction)
 	{
 		_this.dice.setPlayerPosition();
         _this.showDice( function(){
-		_this.rollDice("Player 1", function(){
+    		_this.rollDice("Player 1", function() {
 
-		if(_this.dice.value1 == _this.dice.value2)
-		{
-			// Todo: message here for the +1 bonus
-			_this.Doubles = 1;
-		} 
-		else 
-		{
-			_this.Doubles = 0;
-		}
+            		if(_this.dice.value1 == _this.dice.value2)
+            		{
+            			// Todo: message here for the +1 bonus
+            			_this.Doubles = 1;
+            		} 
+            		else 
+            		{
+            			_this.Doubles = 0;
+            		}
 
-		// Move ball, then turnover if 1 rolled, then end turn
-		_this.moveBall (_this.dice.value1 + _this.dice.value2 + _this.Doubles, function() {
-		_this.Doubles = 0;
-		if (_this.chipZone == 11)
-		{
-			GoalAttempt = Direction;
-		}
-		else
-		{
-			_this.changePossession();
-		}
-		_this.endTurn();
-	}
+            		// Move ball, then turnover if 1 rolled, then end turn
+            		_this.moveBall (_this.dice.value1 + _this.dice.value2 + _this.Doubles, function() {
+                    		_this.Doubles = 0;
+                    		if (_this.chipZone == 11)
+                    		{
+                    			GoalAttempt = Direction;
+                    		}
+                    		else
+                    		{
+                    			_this.changePossession();
+                    		}
+                    		_this.endTurn();
+            	    });
+            });
+        });
+    }
 
 
 
