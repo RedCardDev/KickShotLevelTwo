@@ -38,6 +38,10 @@ game.createClass('CardMenu', {
             this.cards[i].sprite.mouseout = this.mouseOutCard.bind(this);
         }
 
+        // for(var i = 0; i < 6; i++) {
+        //     this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - this.cards[i].sprite.height*0.1); 
+        // }
+
 
     },
 
@@ -121,15 +125,21 @@ game.createClass('CardMenu', {
         }
 
         // Todo: check for number of cards in hand if less than 6
-        for(var i = 0; i < 6; i++) {
-            this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - this.cards[i].sprite.height*0.1);
-            
-            //this.cards[i].sprite.position.set( (((game.system.width/ (this.cards.length+2) )*5 + this.cards[i].sprite.width)/this.cards.length) * i, game.system.height - this.cards[i].sprite.height*0.15);
-
-        }
+        // for(var i = 0; i < 6; i++) {
+        //     this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - this.cards[i].sprite.height*0.1); 
+        // }
 
         //this.printCards();
     },
+
+    /* Reset cards to the initial position (showing, on bottom of screen) */
+    resetPosition: function() {
+        for(var i = 0; i < 6; i++) {
+            this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - this.cards[i].sprite.height*0.1); 
+        }
+    },
+
+
 	
 	hideCard: function(cardNumber)
 	{
@@ -163,7 +173,7 @@ game.createClass('CardMenu', {
 
         switch (cardName) {
 
-            // Intercept
+            /* Intercept */
             case("Intercept_Home"):
             case("Intercept_Away"):
                 // Return true if the current Player does not have the ball
@@ -172,10 +182,13 @@ game.createClass('CardMenu', {
                 return returnValue;
                 break;
 
-            // Pass
-            // warning: this card is not actually checked yet
+            /* Pass */
             case("Pass_Home"):
-                console.log("warning: \'Pass card\' not checked in \'isPlayable()\'");
+            case("Pass_Away"):
+                /* return true if the current player has the ball */
+                currentPlayer === currentPossession ? returnValue = true : returnValue = false;
+                console.log("Card \'" + cardName + "\' isPlayable == " + returnValue);
+                return returnValue;
                 break;
             default: 
                 console.log("error in \'isPlayable\': unsupported card name");

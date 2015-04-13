@@ -249,6 +249,7 @@ game.createScene('Game', {
 
 
         this.cardMenu.updateCards(this.playerHand);
+        this.cardMenu.resetPosition();
 
 
 
@@ -804,11 +805,14 @@ game.createScene('Game', {
 
 
     changePossession: function() {
-        var self = this;
-        this.showMessage('Intercept', function() {
-            self.possession = !self.possession;
-            self.updateBallTexture();
-        });
+        _this.possession = !_this.possession;
+        _this.updateBallTexture();
+        _this.displayMessageSprite("            Turnover!", function(){} );
+        // var self = this;
+        // this.showMessage('Intercept', function() {
+        //     self.possession = !self.possession;
+        //     self.updateBallTexture();
+        // });
     },
 
     centerBall: function() {
@@ -1118,31 +1122,72 @@ game.createScene('Game', {
 		this.endTurn();
 	},
 
+
     /* Card Menu clicks */
+
     clickCard0: function(mousedata) { 
         console.log("clicked card 0");
-        this.testPlayable(this.cardMenu.cards[0].name);
+        if(this.testPlayable(this.cardMenu.cards[0].name)){
+            // Todo: remove the card and draw another
+            _this.playCard(_this.cardMenu.cards[0].name);
+        }
     },
     clickCard1: function(mousedata) { 
         console.log("clicked card 1");
-        this.testPlayable(this.cardMenu.cards[1].name);
+        if(this.testPlayable(this.cardMenu.cards[1].name)){
+            // Todo: remove the card and draw another
+            _this.playCard(_this.cardMenu.cards[1].name);
+        }
     },
     clickCard2: function(mousedata) { 
         console.log("clicked card 2");
-        this.testPlayable(this.cardMenu.cards[2].name);
+        if(this.testPlayable(this.cardMenu.cards[2].name)){
+            // Todo: remove the card and draw another
+            _this.playCard(_this.cardMenu.cards[2].name);
+        }
     },
     clickCard3: function(mousedata) { 
         console.log("clicked card 3");
-        this.testPlayable(this.cardMenu.cards[3].name);
+        if(this.testPlayable(this.cardMenu.cards[3].name)){
+            // Todo: remove the card and draw another
+            _this.playCard(_this.cardMenu.cards[3].name);
+        }
     },
     clickCard4: function(mousedata) { 
         console.log("clicked card 4");
-        this.testPlayable(this.cardMenu.cards[4].name);
+        if(this.testPlayable(this.cardMenu.cards[4].name)){
+            // Todo: remove the card and draw another
+            _this.playCard(_this.cardMenu.cards[4].name);
+        }
     },
     clickCard5: function(mousedata) { 
         console.log("clicked card 5");
-        this.testPlayable(this.cardMenu.cards[5].name);
+        if(this.testPlayable(this.cardMenu.cards[5].name)){
+            // Todo: remove the card and draw another
+            _this.playCard(_this.cardMenu.cards[5].name);
+        }
     },
+
+    playCard: function(whichCard){
+        whichCard = whichCard.toUpperCase();
+
+        switch (whichCard) {
+            case "PASS_HOME":
+            case "PASS_AWAY":
+                console.log("Playing pass card...");
+                _this.playerPass();
+                break;
+            case "INTERCEPT_HOME":
+            case "INTERCEPT_AWAY":
+                console.log("Playing intercept card....");
+                _this.playerIntercept();
+                break;
+            default:
+                console.log("warning: can't play this card yet");
+                break;
+        }
+    },
+
 	
     /* Slide text message across screen */
 	displayMessageSprite: function(messageString, callback){
@@ -1174,16 +1219,13 @@ game.createScene('Game', {
 
 
         // Todo: update this to use sprites if Aziz doesn't like the text
-
-        /* Code for using sprite instead of text */
-        // this.activeSprite = new game.Sprite(spritename).addTo(this.stage);
-        // this.activeSprite.anchor.set(0.5, 0.5);
-        // this.activeSprite.center();
-        // this.activeSprite.x = 0;
-        // this.activeSprite.scale.set(1.75, 1.75);
 	},
     
-	playerPass: function()
+
+	// Todo: manually click to roll the dice
+    // Todo: goal scoring on the rolloff
+    // Todo: have a goal kick (both die roll) after blocking a goal. uses your next turn
+    playerPass: function()
 	{
 		_this.dice.setPlayerPosition();
         _this.showDice( function(){
@@ -1203,40 +1245,50 @@ game.createScene('Game', {
     			_this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
     				_this.Doubles = 0;
     				
+                    console.log("moving ball from pass...");
+                    console.log("new chipzone: " + _this.chipZone);
                     /* Pass in goal attempt */
-    				if (_this.chipZone == 11)
+    				if (_this.chipZone == -11)
     				{
-    					this.rollDice("Both", function() {
+                        console.log("trying to score!");
+    					_this.rollDice("Both", function() {
 
                             // Human wins the rolloff: start human's turn
-                            if (self.dice.value2 > self.dice.value1) 
+                            if (_this.dice.value2 > _this.dice.value1) 
                             {
                                 _this.ScoreGoal();
                             }
                         });
     				}
-    				
-    				// Turnover if 1 is rolled
-                    // Todo: turnover on pass in goal attempt?
-    				if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+                    /* Turnover if 1 on either dice. This rule doesn't apply when attempting a goal */
+    				else if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
     				{
     					_this.changePossession();
     				}
+
+                    //Todo: call this somewhere else
     				_this.endTurn();
     		    });
 		    });
         });
 	},
 	
+
+    // Todo: fix to manually click to roll dice
 	playerIntercept: function()
 	{
 		_this.dice.setPlayerPosition();
         _this.showDice( function(){
     		_this.rollDice("Player 1", function() {
-        		if(_this.dice.value1 == _this.dice.value2 && _this.dice.value1 != 1)
-        		{
-        			_this.changePossession();
-        		} 
+
+        		/* Success if neither dice rolls a '1' */ 
+                if(_this.dice.value1 != 1 && _this.dice.value2 != 1)
+                {
+                    _this.changePossession();
+                }
+
+
+                // Todo: call this somewhere else
         		_this.endTurn();
             });
         });
