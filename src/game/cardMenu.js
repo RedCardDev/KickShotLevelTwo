@@ -13,7 +13,7 @@ game.createClass('CardMenu', {
         {name: 'close', sprite: null}
         ],
 	skipButton: {name: 'skip', sprite: null},
-    //highlightedCard: -1,
+    animating: false,
 
     init: function() {
 		this.skipButton.sprite = new game.Sprite('skip').addTo(game.scene.stage);
@@ -46,54 +46,31 @@ game.createClass('CardMenu', {
     },
 
     mouseOutCard: function(mousedata) {
+
+        if(this.animating){
+            return;
+        }
+
         mousedata.target.scale.x = mousedata.target.scale.y = 0.3;
         //mousedata.target.position.y = game.system.height - this.cards[0].sprite.height*0.15;
-        mousedata.target.position.y += 500;
-
+        // mousedata.target.position.y += 500;
+        mousedata.target.position.y = game.system.height - 50;
     },
 
 
     mouseOverCard: function(mousedata) {
 
+        if(this.animating){
+            return;
+        }
+
         mousedata.target.scale.x = mousedata.target.scale.y = 0.5;
-        mousedata.target.position.y -= 500;
-		
-		
-		// These numbers will have to be adjusted if card size is adjusted.
-		// if (mousedata.target.position.x <= 50)
-		// 	console.log("1");
-		// else if (mousedata.target.position.x <= 100)
-		// 	console.log("2");
-		// else if (mousedata.target.position.x <= 200)
-		// 	console.log("3");
-		// else if (mousedata.target.position.x <= 250)
-		// 	console.log("4");
-		// else if (mousedata.target.position.x <= 350)
-		// 	console.log("5");
-		// else
-		// 	console.log("6");
+        // mousedata.target.position.y -= 500;
+        mousedata.target.position.y = 420;	
     },
 
-  //   clickedCard: function(mousedata){
-  //       console.log("clicked card: ");
-  //       mousedata.target.setTexture("Intercept_Home");
 
-		// if (mousedata.target.position.x <= 50)
-		// 	console.log("1");
-		// else if (mousedata.target.position.x <= 100) {
-		// 	console.log("2");
-  //           //console.log("card's name is: " + this.cards[1].name);
-  //       }
-		// else if (mousedata.target.position.x <= 200)
-		// 	console.log("3");
-		// else if (mousedata.target.position.x <= 250)
-		// 	console.log("4");
-		// else if (mousedata.target.position.x <= 350)
-		// 	console.log("5");
-		// else
-		// 	console.log("6");
-  //   },
-	 mouseOverSkip: function(mousedata) {
+	mouseOverSkip: function(mousedata) {
 		mousedata.target.setTexture('skipover');
         mousedata.target.scale.x = mousedata.target.scale.y = 0.5;
         //mousedata.target.position.y -= 500;
@@ -133,35 +110,78 @@ game.createClass('CardMenu', {
     },
 
     /* Reset cards to the initial position (showing, on bottom of screen) */
-    resetPosition: function() {
+    resetShowingPosition: function() {
         for(var i = 0; i < 6; i++) {
-            this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - this.cards[i].sprite.height*0.1); 
+            this.cards[i].sprite.scale.x = this.cards[i].sprite.y = 0.3;
+            // this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - this.cards[i].sprite.height*0.1);
+            this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - 50); 
+        }
+    },
+
+    resetHiddenPosition: function() {
+        for(var i = 0; i < 6; i++) {
+            this.cards[i].sprite.scale.x = this.cards[i].sprite.y = 0.3;
+            this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height); 
         }
     },
 
 
-	
+	/* unused. Also may be buggy (doesn't reset positions when animating) */
 	hideCard: function(cardNumber)
 	{
-	  game.scene.addTween(this.cards[cardNumber].sprite, {y: game.system.height}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+        var self = this;
+        this.animating = true;
+        this.resetShowingPosition();
+        game.scene.addTween(this.cards[cardNumber].sprite, {y: game.system.height}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out,
+            onComplete: function(){
+                self.animating = false;
+            }}).start();
 	},
 	
 	hideCards: function()
 	{
+        console.log("hiding cards");
+        var self = this;
+        this.animating = true;
+
+        /* make sure cards are in position to hide */
+        this.resetShowingPosition();
+
+        /* Slide cards off screen */
 		for(var i = 0; i < 6; i++) {
-			game.scene.addTween(this.cards[i].sprite, {y: game.system.height}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+			game.scene.addTween(this.cards[i].sprite, {y: game.system.height}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out,
+                onComplete: function(){
+                    self.animating = false;
+                }}).start();
 		}
 	},
 	
+    /* unused. Also may be buggy (doesn't reset positions when animating) */
 	showCard: function(cardNumber)
 	{
-	  game.scene.addTween(this.cards[cardNumber].sprite, {y: game.system.height - 50}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+        var self = this;
+        this.animating = true;
+	    game.scene.addTween(this.cards[cardNumber].sprite, {y: game.system.height - 50}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out,
+            onComplete: function(){
+                self.animating = false;
+            }}).start();
 	},
 	
 	showCards: function()
 	{
-		for(var i = 0; i < 6; i++) {
-			game.scene.addTween(this.cards[i].sprite, {y: game.system.height - 50}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out }).start();
+        console.log("showing cards");
+        var self = this;
+        this.animating = true;
+
+        /* make sure cards are right below bottom of screen */
+        this.resetHiddenPosition();
+
+        /* Slide cards into view */
+		for(var i = 0; i < 6; i++) {           
+			game.scene.addTween(this.cards[i].sprite, {y: game.system.height - 50}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out,
+                onComplete: function(){
+                    self.animating = false;
+                }}).start();
 		}
 	},
 
@@ -195,20 +215,6 @@ game.createClass('CardMenu', {
                 console.log("warning: returning \'false\'");
                 return this.returnValue;
         }
-    },
-    
-
-
-
-
-
-    show: function() {
-        // Show the card menu
-    },
-
-    
-    hide: function() {
-        // Hide the card menu
     },
 
     enlargeCard: function() {

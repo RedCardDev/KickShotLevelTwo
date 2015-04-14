@@ -250,7 +250,7 @@ game.createScene('Game', {
 
 
         this.cardMenu.updateCards(this.playerHand);
-        this.cardMenu.resetPosition();
+        this.cardMenu.resetHiddenPosition();
 
 
 
@@ -633,22 +633,6 @@ game.createScene('Game', {
 
                         });
 
-                        
-
-
-
-                        
-                        // console.log("trying to score!");
-                        // _this.rollDice("Both", function() {
-                        //     //Todo: reroll if tied
-
-                        //     // Human wins the rolloff: start human's turn
-                        //     if (_this.dice.value1 > _this.dice.value2) 
-                        //     {
-                        //         _this.scoreGoal();
-                        //     }
-
-                        // });
                     }
                     /* Turnover if 1 on either dice. This rule doesn't apply when attempting a goal */
                     else
@@ -751,7 +735,7 @@ game.createScene('Game', {
             // Prevent re-access of this function
             _this.disableInput();
             _this.gamePhase = -1;
-			self.hideHand();
+			// self.hideHand();
 
 			//Roll both dice, then evaluate the result
 			this.rollDice("Both", function() {
@@ -1220,6 +1204,7 @@ game.createScene('Game', {
 
 	skipClick: function(mousedata){
 		console.log("clicked on skip");
+        this.cardMenu.hideCards();
 		this.endTurn();
 	},
 
