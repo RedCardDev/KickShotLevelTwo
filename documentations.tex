@@ -1,0 +1,263 @@
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\usepackage{titling}
+
+\newcommand{\subtitle}[1]{
+	\posttitle{
+		\par\end{center}
+		\begin{center}\large#1\end{center}
+		\vskip0.5em
+	}
+}
+
+\geometry{margin=1in}
+
+\title{Documentation}
+\subtitle{KickShot}
+\date{\today}
+\author{
+Tessa
+}
+
+\begin{document}
+
+\maketitle
+
+\section*{main.js}
+\subsection*{createScene 'Main'}
+This section runs the start screen. 
+Variables: 
+\begin{itemize}
+\item backgroundColor
+\item title 
+\item playButton
+\item webButton
+\item characters
+\item cycle
+\item charSprite 
+\item charIndex 
+\item inPlayClick 
+\end{itemize}
+\subsubsection*{init()}
+Sets up the start screen. Rotates the character sprites. 
+\subsubsection*{playClick()}
+Beings the actual game-play.
+\subsubsection*{webClick()}
+Opens the kickshot link. 
+\subsubsection*{nextCharacter()}
+Rotates the character sprites.
+
+\subsection*{createScene 'Game'}
+Runs the game-play. 
+Variables include: 
+\begin{itemize}
+\item backgroundColor
+\item dice 
+\item message
+\item aiScoreText 
+\item humanScoreText
+\item canTap
+\item inMessage
+\item afterMessage
+\item turn 
+\item possession
+\item playerDeck
+\item playerHand
+\item canPlayCards
+\item aiDeck
+\item aiHand
+\item chip
+\item chipZone 
+\item gamePhase 
+\item kickoff
+\item helpButton
+\item rules 
+\item backButton
+\item \_this
+\item activeSprite
+\item messageText
+\item boardZone 
+\end{itemize}
+
+\subsubsection*{init()}
+Sets up the playing field, deck, hand, and buttons. 
+\subsubsection*{enableInput()}
+This makes it so taps and clicks are used for input. 
+\subsubsection*{disableInput()}
+This makes it so taps and clicks are ignored. 
+\subsubsection*{helpClick()}
+This brings out the rules for the game. 
+\subsubsection*{backClick()}
+This brings the player back to the main screen. 
+\subsubsection*{hideRulesClick()}
+This removes the rules sprite. 
+\subsubsection*{humanTurn()}
+This function checks whether kickoff is true, then sets the gamePhase
+to 1 if it is true, or  if it is not true, gamePhase is set to 3. 
+\subsubsection*{aiTurn()}
+This function checks whether kickoff is true, then calls aiKickoff if
+it is true, or does other operations if it is not true. 
+\subsubsection*{fieldClick()}
+This function should be called when the field is clicked, is input
+is enabled. This function checks the gamePhase and performs various
+functions based on that. 
+\subsubsection*{aiKickoff(callback)}
+This function performs a kickoff while it is the AI's turn. 
+The callback parameter is not used. 
+%is this correct?
+\subsubsection*{hideDice(callback)}
+This function hides the dice sprites and calls the callback
+parameter. 
+\subsubsection*{showDice(callback)}
+This function shows the dice sprites and calls the callback 
+parameter.
+\subsubsection*{rollDice(whichPlayer,callback)}
+This function calls dice roll functions from the dice.js file 
+for players indicated by the whichPlayer parameter. The callback
+parameter is run, after some timers. 
+\subsubsection*{showHand(callback)}
+This function calls the showCards() method from the cardMenu.js 
+file. The callback parameter is not used. 
+\subsubsection*{hideHand(callback)}
+This function calls the hideCards()method from the cardMenu.js file.
+The callback parameter is not used. 
+\subsubsection*{changePossession()}
+The function changes possession of the ball by changing the
+ possession variable. 
+\subsubsection*{centerBall()}
+This function sets the ball n the middle of the field. 
+\subsubsection*{updateBallTexture()}
+This function sets the chip sprite according to possession. 
+\subsubsection*{blockGoal()}
+This function is called when a goal is blocked. It shows a message
+and reassigns possession.
+\subsubsection*{moveBall(move,callback)}
+Moves the active chipZone, moves the chip sprite to a new location
+indicated by the move parameter. The callback parameter is then
+ called. 
+\subsubsection*{advanceToken()}
+An old function. moveBall replaced this. 
+\subsubsection*{goalShot()}
+Displays the GoalShot message. 
+\subsubsection*{endTurn()}
+Starts the other player's turn. 
+\subsubsection*{scoreGoal()}
+Increments score for scoring player, resets the chip sprite and 
+chipZone. 
+\subsubsection*{drawCard(whichPlayer)}
+
+\subsubsection*{printPlayerHand()}
+
+\subsubsection*{showMessage(msgType,after)}
+
+\subsubsection*{hideMessage(after)}
+
+\subsubsection*{gameOver()}
+
+\subsubsection*{updateScore()}
+
+\subsubsection*{pause(timeToPause)}
+
+\subsubsection*{testPlayable(cardName)}
+
+\subsubsection*{skipClick(mouseData)}
+
+\subsubsection*{clickCard0(mouseData)}
+
+\subsubsection*{clickCard1(mouseData)}
+
+\subsubsection*{clickCard2(mouseData)}
+
+\subsubsection*{clickCard3(mouseData)}
+
+\subsubsection*{clickCard4(mouseData)}
+
+\subsubsection*{clickCard5(mouseData)}
+
+\subsubsection*{displayMessageSprite(messageString,callback)}
+
+\subsubsection*{playerPass()}
+
+\subsubsection*{playerIntercept()}
+
+\subsubsection*{playerGoalShot(Direction)}
+
+\section*{dice.js}
+This file handles the dice, rolling, hiding and showing dice 
+sprites.  
+\subsection*{createClass 'Dice'}
+Variables include: 
+\begin{itemize}
+\item rolling 
+\item value1
+\item value2
+\item timing
+\end{itemize}
+
+\subsubsection*{init()}
+\subsubsection*{update()}
+\subsubsection*{show()}
+\subsubsection*{hide()}
+\subsubsection*{roll()}
+\subsubsection*{stopRoll()}
+\subsubsection*{setPlayerPosition()}
+\subsubsection*{setAiPosition()}
+\subsubsection*{setBothPositions()}
+\subsubsection*{reset()}
+
+\section*{deck.js}
+This file handles the deck of cards, generation, shuffling, drawing
+cards. 
+\subsection*{createClass 'Deck'}
+Variables include:
+\begin{itemize}
+\item offenseSubDeck
+\item defenseSubDeck
+\item deck
+\item top6Cards
+\item homeOffenseCards
+\item homeDefenseCards
+\item awayOffenseCards
+\item awayDefenseCards
+\end{itemize}
+\subsubsection*{init(side)}
+\subsubsection*{buildDeck(side)}
+\subsubsection*{draw()}
+\subsubsection*{printDeck}
+\subsubsection*{printSubDecks()}
+\subsubsection*{shuffle(array)}
+\section*{config.js}
+This file contains screen size, name, and version information. 
+\section*{cardMenu.js}
+This file handles the card menu, hand, buttons, and layout. 
+\subsection*{createClass 'CardMenu'}
+Variables include:
+\begin{itemize}
+\item cards
+\item skipButton
+\end{itemize}
+\subsubsection*{init()}
+\subsubsection*{mouseOutCard(mousedata)}
+\subsubsection*{mouseOverCard(mouseData)}
+\subsubsection*{mouseOverSkip(mousedata)}
+\subsubsection*{mouseOutSkip(mousedata)}
+\subsubsection*{updateCards(cardsInHand)}
+\subsubsection*{hideCard(cardNumber)}
+\subsubsection*{hideCards()}
+\subsubsection*{showCard(cardNumber)}
+\subsubsection*{showCards()}
+\subsubsection*{isPlayable(cardName,currentPlayer,currentPossession,
+ballZone)}
+\subsubsection*{show()}
+Does nothing.
+\subsubsection*{shide()}
+Does nothing.
+\subsubsection*{enlargeCard()}
+Does nothing
+\subsubsection*{printCards()}
+Prints card number and name to the console. 
+
+\section*{assests.js}
+This file adds all of the sprites used in the game. 
+
+\end{document}
