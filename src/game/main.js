@@ -143,6 +143,7 @@ game.createScene('Game', {
     chipZone: 0,
 	gamePhase: -1,
     kickoff: false,
+    goalKick: false,
 
     helpButton: null,
     rules: null,
@@ -344,8 +345,8 @@ game.createScene('Game', {
     humanTurn: function() {
         console.log("start human turn");
 
-        // Kickoff from center line
-        if(this.kickoff)
+        /* Kickoff from center line */
+        if(_this.kickoff)
         {
             // Prevent clicks from doing anything
             _this.gamePhase = -1;
@@ -357,16 +358,22 @@ game.createScene('Game', {
                 _this.enableInput();
             });
 
-            //this.gamePhase = 1;
             return;
+        }
+        /* Goal kick (from goal line, after a block) */
+        else if(_this.goalKick)
+        {
+            console.log("warning: goal kick not implemented yet for human player!");
+            // Todo: goal kicks
         }
         // Non kickoff
         else
         {
             // todo: enable input here
             // Let player select a card
+            // Todo: input is currently disabled here
 			_this.showHand();
-            this.gamePhase = 3;
+            _this.gamePhase = 2;
             return;
         }
     },
@@ -374,10 +381,16 @@ game.createScene('Game', {
     aiTurn: function() {
         console.log("start ai turn");
 
-        // Kickoff from center line
+        /* Kickoff from center line */
         if(_this.kickoff)
         {
             _this.aiKickoff();
+        }
+        /* Goal kick (from goal line, after a block) */
+        else if(_this.goalKick)
+        {
+            // do a goal kick and end turn
+            _this.aiGoalKick();
         }
         else
         {
@@ -540,21 +553,132 @@ game.createScene('Game', {
 		// 	this.gamePhase = 6;
 		// 	console.log("-----end gamePhase 5-----");
 		// }
-		
-        /* Human Card Menu */
-		if (this.gamePhase == 3)
-		{
-            // Todo: somehow insert the cardmenu into this phase. Input will enable,
-            //       and a card will be selected. Go to separate function after this 
-            //       that figures which card, and does all the steps for that card.
-            //       Will probably need numerous game phases for the different cards.
 
-            console.log("-----gamePhase 3-----");
+
+        if(this.gamePhase == 5){
+            //Todo: human goalKick!
+        }
+		
+        /* Rolloff for passing in to goal */
+        if(this.gamePhase == 4){
+
+            /* Prevent re-entry */
+            _this.gamePhase = -1;
+            _this.disableInput();
+
+
+            _this.rollDice("Both", function() {
+                
+                /* Tie! Let them roll again */
+                if(_this.dice.value1 == _this.dice.value2){
+                    _this.gamePhase = 4;
+                    _this.enableInput();
+                    return;
+                }
+                /* Success! Score goal (which also ends turn)*/
+                else if (_this.dice.value1 > _this.dice.value2) 
+                {
+                    _this.scoreGoal();
+                }
+                /* Blocked! */
+                else
+                {
+                    /* Defender does a goal kick for their next turn */
+                    _this.changePossession();
+                    _this.goalKick = true;
+                    _this.endTurn();
+                }
+
+            });
+        }
+
+
+        /* Roll dice for human pass card */
+        if(this.gamePhase == 3){
+
+            /* Prevent re-entry */
+            _this.gamePhase = -1;
+            _this.disableInput();
+
+            /* Roll both dice for player */
+            _this.rollDice("Player 1", function(){
+
+                if(_this.dice.value1 == _this.dice.value2)
+                {
+                    // Todo: message here for the +1 bonus
+                    _this.Doubles = 1;
+                } 
+                else 
+                {
+                    _this.Doubles = 0;
+                }
+
+                // Move ball, then turnover if 1 rolled, then end turn
+                _this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
+                    _this.Doubles = 0;
+                    
+                    /* Pass in goal attempt */
+                    if (_this.chipZone == -11)
+                    {
+                        /* Hide dice before repositioning them */
+                        _this.hideDice(function(){
+
+                            /* Set up a roll off. Wait for player to click */
+                            _this.dice.setBothPositions();
+                            _this.showDice( function() {
+                                _this.gamePhase = 4;
+                                _this.enableInput();
+                                return;
+                            });
+
+                        });
+
+                        
+
+
+
+                        
+                        // console.log("trying to score!");
+                        // _this.rollDice("Both", function() {
+                        //     //Todo: reroll if tied
+
+                        //     // Human wins the rolloff: start human's turn
+                        //     if (_this.dice.value1 > _this.dice.value2) 
+                        //     {
+                        //         _this.scoreGoal();
+                        //     }
+
+                        // });
+                    }
+                    /* Turnover if 1 on either dice. This rule doesn't apply when attempting a goal */
+                    else
+                    {
+
+                        if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+                        {
+                            _this.changePossession();
+                        }
+
+                            _this.endTurn();
+                    }
+                    
+                });
+            });
+        }
+
+
+
+
+        /* Human Card Menu */
+		if (this.gamePhase == 2)
+		{
+
+            console.log("-----gamePhase 2-----");
 			if (this.turn == game.HUMAN)
 			{
 				//Open Card Menu
 				console.log("Card Menu");
-				self.showHand();
+				//self.showHand();
 			}
             // Todo: Move ai card choice to its own function
 			else{
@@ -562,7 +686,7 @@ game.createScene('Game', {
 				console.log("AI");
 			}
 			this.gamePhase = 5;
-			console.log("-----end gamePhase 3-----");
+			console.log("-----end gamePhase 2-----");
 		}
 		
 		
@@ -570,7 +694,6 @@ game.createScene('Game', {
         /* Human Kickoff */
 		if (this.gamePhase == 1)
 		{
-            console.log("-----gamePhase 1-----");
 
             // If it is the AI's ball, a mistake was made
             if(this.possession == game.AI) {
@@ -624,9 +747,6 @@ game.createScene('Game', {
         /* Initial rolloff */
 		if (this.gamePhase == 0)
 		{
-            console.log("-----gamePhase 0-----");
-
-            // _this.displayMessageSprite("     test", function(){ console.log("Message done. This print is in the callback");} );
 
             // Prevent re-access of this function
             _this.disableInput();
@@ -696,16 +816,10 @@ game.createScene('Game', {
 
     /******** AI functions ********/
 
+    // Todo: possibly remove this callback
     aiKickoff: function(callback) {
         _this.gamePhase = -1;
         _this.kickoff = false;
-
-            // Give player 1 the dice
-            _this.dice.setPlayerPosition();
-            _this.showDice( function(){
-                _this.gamePhase = 1;
-            });
-
 
 
         _this.dice.setAiPosition();
@@ -741,6 +855,44 @@ game.createScene('Game', {
 
             });
         });
+    },
+
+    /* Goal kick after a successful block */
+    aiGoalKick: function() {
+        _this.goalKick = false;
+        console.log("ai goal kick");
+
+        _this.dice.setAiPosition();
+        _this.showDice( function(){
+            _this.rollDice("Player 2", function(){
+
+                /* Calculate outcome of dice roll */
+
+                // +1 to roll for doubles
+                if(_this.dice.value1 == _this.dice.value2)
+                {
+                    // Todo: message here for the +1 bonus
+                    _this.Doubles = 1;
+                } 
+                else 
+                {
+                    _this.Doubles = 0;
+                }
+
+                _this.moveBall(_this.dice.value1 + _this.dice.value2 + _this.Doubles, function(){
+
+                    /* Turnover if 1 is rolled */
+                    if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+                    {
+                        _this.changePossession();
+                    }
+                    _this.endTurn();
+
+                });
+
+            });
+        });
+
     },
 
 
@@ -807,7 +959,7 @@ game.createScene('Game', {
     changePossession: function() {
         _this.possession = !_this.possession;
         _this.updateBallTexture();
-        _this.displayMessageSprite("            Turnover!", function(){} );
+        _this.displayMessageSprite("          Turnover!", function(){} );
         // var self = this;
         // this.showMessage('Intercept', function() {
         //     self.possession = !self.possession;
@@ -930,86 +1082,35 @@ game.createScene('Game', {
         });
     },
 	
+    /* Awards point, then resets ball for kickoff and ends turn */
 	scoreGoal: function() {
-		// New function made by Tessa 
-        var self = this;
 
-        if (self.chipZone == 11) {
-            //game.audio.playSound('boo');
-        } else {
-            //game.audio.playSound('cheer');
-        }
+        _this.displayMessageSprite("         Goal!", function() {
 
-        this.showMessage('Goal', function() { });
-			//var kickOffPlayer = false;
-			if (self.chipZone == 11) {
-				game.AiScore += 1;
-				//    kickOffPlayer = game.HUMAN;
-			}
-			if (self.chipZone == -11) {
-				game.HumanScore += 1;
-				//    kickOffPlayer = game.AI;
-			}
-			self.updateScore();
+            /* Award a point */
+            if (_this.chipZone == 11) {
+                game.AiScore += 1;
+            }
+            else if (_this.chipZone == -11) {
+                game.HumanScore += 1;
+            }
+            else {
+                console.log("error in 'scoreGoal', ball not in valid chipZone");
+            }
+            _this.updateScore();
 
-			/*if (game.AiScore == game.MaxScore || game.HumanScore == game.MaxScore) {
-				self.showMessage('End', self.gameOver.bind(self));
-				return true ;
-			}*/
-			this.centerBall();
-			this.chipZone = 0;
-			this.changePossession();
-			this.updateBallTexture();
-			this.gamePhase = 8;
-				
-			this.pause(3000);
-			console.log("Goal test!");
+            /* Reset for kickoff */
+            _this.centerBall();
+            _this.changePossession();
+            _this.updateBallTexture();
+            _this.kickoff = true;
+
+            _this.endTurn();
+
+        });
+
     },
 	
-    // oldscoreGoal: function() {
-    //     var self = this;
-
-    //     if (self.chipZone == 11) {
-    //         //game.audio.playSound('boo');
-    //     } else {
-    //         //game.audio.playSound('cheer');
-    //     }
-
-    //     this.showMessage('Goal', function() {
-    //         var kickOffPlayer = false;
-    //         if (self.chipZone == 11) {
-    //             game.AiScore += 1;
-    //             kickOffPlayer = game.HUMAN;
-    //         }
-    //         if (self.chipZone == -11) {
-    //             game.HumanScore += 1;
-    //             kickOffPlayer = game.AI;
-    //         }
-    //         self.updateScore();
-
-    //         if (game.AiScore == game.MaxScore || game.HumanScore == game.MaxScore) {
-    //             self.showMessage('End', self.gameOver.bind(self));
-    //             return;
-    //         }
-
-    //         self.hideDice();
-    //         self.addTimer(1000, function() {
-    //             self.chipZone = 0;
-    //             self.chip.y = 516;
-    //             self.turn = kickOffPlayer;
-    //             if (kickOffPlayer == game.HUMAN) {
-    //                 self.dice.setPlayerPosition();
-    //                 self.possession = game.HUMAN;
-    //                 self.chip.setTexture('chip-home');
-    //             } else {
-    //                 self.dice.setAiPosition();
-    //                 self.possession = game.AI;
-    //                 self.chip.setTexture('chip-away');
-    //             }
-    //             self.showDice();
-    //         });
-    //     });
-    // },
 
     // Draw card from the deck and put in hand
     // ToDo: handle empty deck
@@ -1229,47 +1330,8 @@ game.createScene('Game', {
 	{
 		_this.dice.setPlayerPosition();
         _this.showDice( function(){
-            _this.rollDice("Player 1", function(){
-
-    			if(_this.dice.value1 == _this.dice.value2)
-    			{
-    				// Todo: message here for the +1 bonus
-    				_this.Doubles = 1;
-    			} 
-    			else 
-    			{
-    				_this.Doubles = 0;
-    			}
-
-    			// Move ball, then turnover if 1 rolled, then end turn
-    			_this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
-    				_this.Doubles = 0;
-    				
-                    console.log("moving ball from pass...");
-                    console.log("new chipzone: " + _this.chipZone);
-                    /* Pass in goal attempt */
-    				if (_this.chipZone == -11)
-    				{
-                        console.log("trying to score!");
-    					_this.rollDice("Both", function() {
-
-                            // Human wins the rolloff: start human's turn
-                            if (_this.dice.value2 > _this.dice.value1) 
-                            {
-                                _this.ScoreGoal();
-                            }
-                        });
-    				}
-                    /* Turnover if 1 on either dice. This rule doesn't apply when attempting a goal */
-    				else if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
-    				{
-    					_this.changePossession();
-    				}
-
-                    //Todo: call this somewhere else
-    				_this.endTurn();
-    		    });
-		    });
+            _this.gamePhase = 3;
+            _this.enableInput();
         });
 	},
 	
@@ -1286,6 +1348,10 @@ game.createScene('Game', {
                 {
                     _this.changePossession();
                 }
+                else
+                {
+                    _this.displayMessageSprite("      Unsuccessful", function(){} )
+                }
 
 
                 // Todo: call this somewhere else
@@ -1294,6 +1360,8 @@ game.createScene('Game', {
         });
 	},
 	
+
+    // Todo: test this
 	playerGoalShot: function(Direction)
 	{
 		_this.dice.setPlayerPosition();
