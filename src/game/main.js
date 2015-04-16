@@ -396,8 +396,18 @@ game.createScene('Game', {
         {
             // Temporary until we start ai
             // Skip over the ai turn
-            console.log("skipping...");
-
+            //console.log("skipping...");
+			if(this.possession == game.AI)
+			{
+				//Try to pass, and later other things
+				_this.AiPass();
+				
+			}else if(this.possession == game.HUMAN)
+			{
+				//Try to intercept
+				_this.AiIntercept();
+			}
+			
             _this.endTurn(); 
         }
 
@@ -1378,7 +1388,113 @@ game.createScene('Game', {
             	    });
             });
         });
+    },
+	AiPass: function()
+	{
+		console.log("AI pass");
+		_this.dice.setAiPosition();
+		
+		_this.showDice(function(){
+		_this.rollDice("Player 2", function(){
+                if(_this.dice.value1 == _this.dice.value2)
+                {
+                    // Todo: message here for the +1 bonus
+                    _this.Doubles = 1;
+                } 
+                else 
+                {
+                    _this.Doubles = 0;
+                }
+                // Move ball, then turnover if 1 rolled, then end turn
+                _this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
+                    _this.Doubles = 0;                    
+                    /* Pass in goal attempt */
+                    if (_this.chipZone == -11)
+                    {
+                        /* Hide dice before repositioning them */
+                        _this.hideDice(function(){
+                            /* Set up a roll off. Wait for player to click */
+							//Doesnt work yet 
+                            _this.dice.setBothPositions();
+                            _this.showDice( function() {
+                                _this.gamePhase = 4;
+                                _this.enableInput();
+                                return;
+                            });
+
+                        });
+
+                    }
+                    /* Turnover if 1 on either dice. This rule doesn't apply when attempting a goal */
+                    else
+                    {
+                        if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+                        {
+                            _this.changePossession();
+                        }
+                    }
+                    
+                });
+            });
+		});
+	},
+	
+
+	AiIntercept: function()
+	{
+		console.log("AI intercept");
+		_this.dice.setAiPosition();
+		_this.showDice( function(){
+			
+			_this.rollDice("Player 2", function() {
+
+				/* Success if neither dice rolls a '1' */ 
+				if(_this.dice.value1 != 1 && _this.dice.value2 != 1)
+				{
+					_this.changePossession();
+				}
+				else
+				{
+					_this.displayMessageSprite("      Unsuccessful", function(){} );
+				}
+			});
+		});
+	},
+	
+	// no idea if this works
+	AiGoalShot: function(Direction)
+	{
+		_this.dice.setAiPosition();
+        _this.showDice( function(){
+    		_this.rollDice("Player 2", function() {
+
+            		if(_this.dice.value1 == _this.dice.value2)
+            		{
+            			// Todo: message here for the +1 bonus
+            			_this.Doubles = 1;
+            		} 
+            		else 
+            		{
+            			_this.Doubles = 0;
+            		}
+
+            		// Move ball, then turnover if 1 rolled, then end turn
+            		_this.moveBall (_this.dice.value1 + _this.dice.value2 + _this.Doubles, function() {
+                    		_this.Doubles = 0;
+                    		if (_this.chipZone == 11)
+                    		{
+                    			GoalAttempt = Direction;
+                    		}
+                    		else
+                    		{
+                    			_this.changePossession();
+                    		}
+                    		_this.endTurn();
+            	    });
+            });
+        });
     }
+
 
 
 
