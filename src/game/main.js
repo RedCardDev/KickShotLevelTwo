@@ -363,15 +363,17 @@ game.createScene('Game', {
         /* Goal kick (from goal line, after a block) */
         else if(_this.goalKick)
         {
-            console.log("warning: goal kick not implemented yet for human player!");
-            // Todo: goal kicks
+            /* give player 1 the dice */
+            _this.dice.setPlayerPosition();
+            _this.showDice( function() {
+                _this.gamePhase = 5;
+                _this.enableInput();
+            });
+            return;
         }
-        // Non kickoff
+        /* Play a card */
         else
         {
-            // todo: enable input here
-            // Let player select a card
-            // Todo: input is currently disabled here
 			_this.showHand();
             _this.gamePhase = 2;
             return;
@@ -394,9 +396,7 @@ game.createScene('Game', {
         }
         else
         {
-            // Temporary until we start ai
-            // Skip over the ai turn
-            //console.log("skipping...");
+            /* Play a 'pass' or 'intercept' card */
 			if(this.possession == game.AI)
 			{
 				//Try to pass, and later other things
@@ -408,7 +408,6 @@ game.createScene('Game', {
 				_this.AiIntercept();
 			}
 			
-            _this.endTurn(); 
         }
 
 
@@ -565,11 +564,44 @@ game.createScene('Game', {
 		// }
 
 
+
+        /* Human goal kick (after blocking a goal attempt) */
         if(this.gamePhase == 5){
-            //Todo: human goalKick!
+
+            _this.goalKick = false;
+            
+            /* Prevent re-entry */
+            _this.gamePhase = -1;
+            _this.disableInput();
+
+            _this.rollDice("Player 1", function(){
+                // +1 to roll for doubles
+                if(_this.dice.value1 == _this.dice.value2)
+                {
+                    // Todo: message here for the +1 bonus
+                    _this.Doubles = 1;
+                } 
+                else 
+                {
+                    _this.Doubles = 0;
+                }
+
+                _this.moveBall(_this.dice.value1 + _this.dice.value2 + _this.Doubles, function(){
+
+                    /* Turnover if 1 is rolled */
+                    if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+                    {
+                        _this.changePossession();
+                    }
+                    _this.endTurn();
+
+                });
+
+            });
         }
 		
         /* Rolloff for passing in to goal */
+        //  Human and computer
         if(this.gamePhase == 4){
 
             /* Prevent re-entry */
@@ -586,7 +618,8 @@ game.createScene('Game', {
                     return;
                 }
                 /* Success! Score goal (which also ends turn)*/
-                else if (_this.dice.value1 > _this.dice.value2) 
+                else if ( (_this.dice.value1 > _this.dice.value2 && _this.turn == game.HUMAN) ||
+                          (_this.dice.value1 < _this.dice.value2 && _this.turn == game.AI) )  
                 {
                     _this.scoreGoal();
                 }
@@ -598,6 +631,24 @@ game.createScene('Game', {
                     _this.goalKick = true;
                     _this.endTurn();
                 }
+
+
+
+
+
+                // /* Success! Score goal (which also ends turn)*/
+                // else if (_this.dice.value1 > _this.dice.value2) 
+                // {
+                //     _this.scoreGoal();
+                // }
+                // /* Blocked! */
+                // else
+                // {
+                //     /* Defender does a goal kick for their next turn */
+                //     _this.changePossession();
+                //     _this.goalKick = true;
+                //     _this.endTurn();
+                // }
 
             });
         }
@@ -890,7 +941,112 @@ game.createScene('Game', {
     },
 
 
+    AiPass: function()
+    {
+        console.log("AI pass");
+        _this.dice.setAiPosition();
+        
+        _this.showDice(function(){
+            _this.rollDice("Player 2", function(){
+                if(_this.dice.value1 == _this.dice.value2)
+                {
+                    // Todo: message here for the +1 bonus
+                    _this.Doubles = 1;
+                } 
+                else 
+                {
+                    _this.Doubles = 0;
+                }
+                // Move ball, then turnover if 1 rolled, then end turn
+                _this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
+                    _this.Doubles = 0;                    
+                    /* Pass in goal attempt */
+                    if (_this.chipZone == 11)
+                    {
+                        /* Hide dice before repositioning them */
+                        _this.hideDice(function(){
+                            /* Set up a roll off. Wait for player to click */ 
+                            _this.dice.setBothPositions();
+                            _this.showDice( function() {
+                                _this.gamePhase = 4;
+                                _this.enableInput();
+                                return;
+                            });
 
+                        });
+
+                    }
+                    /* Turnover if 1 on either dice. This rule doesn't apply when attempting a goal */
+                    else
+                    {
+                        if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
+                        {
+                            _this.changePossession();
+                        }
+                        _this.endTurn();
+                    }
+                    
+                });
+            });
+        });
+    },
+    
+
+    AiIntercept: function()
+    {
+        console.log("AI intercept");
+        _this.dice.setAiPosition();
+        _this.showDice( function(){
+            
+            _this.rollDice("Player 2", function() {
+
+                /* Success if neither dice rolls a '1' */ 
+                if(_this.dice.value1 != 1 && _this.dice.value2 != 1)
+                {
+                    _this.changePossession();
+                }
+                else
+                {
+                    _this.displayMessageSprite("      Unsuccessful", function(){} );
+                }
+                _this.endTurn();
+            });
+        });
+    },
+    
+    // no idea if this works
+    AiGoalShot: function(Direction)
+    {
+        _this.dice.setAiPosition();
+        _this.showDice( function(){
+            _this.rollDice("Player 2", function() {
+
+                    if(_this.dice.value1 == _this.dice.value2)
+                    {
+                        // Todo: message here for the +1 bonus
+                        _this.Doubles = 1;
+                    } 
+                    else 
+                    {
+                        _this.Doubles = 0;
+                    }
+
+                    // Move ball, then turnover if 1 rolled, then end turn
+                    _this.moveBall (_this.dice.value1 + _this.dice.value2 + _this.Doubles, function() {
+                            _this.Doubles = 0;
+                            if (_this.chipZone == 11)
+                            {
+                                GoalAttempt = Direction;
+                            }
+                            else
+                            {
+                                _this.changePossession();
+                            }
+                            _this.endTurn();
+                    });
+            });
+        });
+    },
 
 
 
@@ -1388,115 +1544,7 @@ game.createScene('Game', {
             	    });
             });
         });
-    },
-	AiPass: function()
-	{
-		console.log("AI pass");
-		_this.dice.setAiPosition();
-		
-		_this.showDice(function(){
-		_this.rollDice("Player 2", function(){
-                if(_this.dice.value1 == _this.dice.value2)
-                {
-                    // Todo: message here for the +1 bonus
-                    _this.Doubles = 1;
-                } 
-                else 
-                {
-                    _this.Doubles = 0;
-                }
-                // Move ball, then turnover if 1 rolled, then end turn
-                _this.moveBall (Math.max(_this.dice.value1, _this.dice.value2) + _this.Doubles, function() {
-                    _this.Doubles = 0;                    
-                    /* Pass in goal attempt */
-                    if (_this.chipZone == -11)
-                    {
-                        /* Hide dice before repositioning them */
-                        _this.hideDice(function(){
-                            /* Set up a roll off. Wait for player to click */
-							//Doesnt work yet 
-                            _this.dice.setBothPositions();
-                            _this.showDice( function() {
-                                _this.gamePhase = 4;
-                                _this.enableInput();
-                                return;
-                            });
-
-                        });
-
-                    }
-                    /* Turnover if 1 on either dice. This rule doesn't apply when attempting a goal */
-                    else
-                    {
-                        if(_this.dice.value1 == 1 || _this.dice.value2 == 1)
-                        {
-                            _this.changePossession();
-                        }
-                    }
-                    
-                });
-            });
-		});
-	},
-	
-
-	AiIntercept: function()
-	{
-		console.log("AI intercept");
-		_this.dice.setAiPosition();
-		_this.showDice( function(){
-			
-			_this.rollDice("Player 2", function() {
-
-				/* Success if neither dice rolls a '1' */ 
-				if(_this.dice.value1 != 1 && _this.dice.value2 != 1)
-				{
-					_this.changePossession();
-				}
-				else
-				{
-					_this.displayMessageSprite("      Unsuccessful", function(){} );
-				}
-			});
-		});
-	},
-	
-	// no idea if this works
-	AiGoalShot: function(Direction)
-	{
-		_this.dice.setAiPosition();
-        _this.showDice( function(){
-    		_this.rollDice("Player 2", function() {
-
-            		if(_this.dice.value1 == _this.dice.value2)
-            		{
-            			// Todo: message here for the +1 bonus
-            			_this.Doubles = 1;
-            		} 
-            		else 
-            		{
-            			_this.Doubles = 0;
-            		}
-
-            		// Move ball, then turnover if 1 rolled, then end turn
-            		_this.moveBall (_this.dice.value1 + _this.dice.value2 + _this.Doubles, function() {
-                    		_this.Doubles = 0;
-                    		if (_this.chipZone == 11)
-                    		{
-                    			GoalAttempt = Direction;
-                    		}
-                    		else
-                    		{
-                    			_this.changePossession();
-                    		}
-                    		_this.endTurn();
-            	    });
-            });
-        });
     }
-
-
-
 
 
 
