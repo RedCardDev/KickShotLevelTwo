@@ -109,6 +109,8 @@ game.createClass('CardMenu', {
         //this.printCards();
     },
 
+
+
     /* Reset cards to the initial position (showing, on bottom of screen) */
     resetShowingPosition: function() {
         for(var i = 0; i < 6; i++) {
@@ -220,6 +222,54 @@ game.createClass('CardMenu', {
     enlargeCard: function() {
         // Enlarge a card for inspection
     },
+
+    reDraw: function(mouseX, mouseY){
+        // console.log("mosex and mousey: " + mouseX + ", " + mouseY);
+
+        var numCards = 6;       // Number of cards in hand (non-null sprites)
+        var overlap = 0.25;     // % of card that overlaps
+        var margin = 30;        // Margin between cards and edge of screen
+        var cardWidth = 229.25; // Width for card at 25% scale
+
+        /* Get number of cards in hand */
+        for(var i = 0; i < this.cards.length; i++){
+            if(this.cards[i].sprite === null){
+                numCards--;
+            }
+        }
+        // console.log("numCards: " + numCards);
+
+        // Determine size of overlap
+        // AreaToFill = numCards*(sprite.width - overlap) + overlap
+        
+        // Gives overlap amount in pix
+        overlap = ( (game.system.width - margin*2) - (cardWidth * numCards) ) / (1 - numCards)
+        overlap = overlap / cardWidth;
+
+        console.log("OVERLAP: " + overlap);
+
+
+        for(var i = 0; i < this.cards.length; i++){
+
+
+            // margin + (cardWith - cardWidth*overlap)*i
+            this.cards[i].sprite.position.set( margin + (i*(cardWidth - (cardWidth*overlap))), game.system.height *0.5 );
+            // this.cards[i].sprite.position.set( margin + i*(30), game.system.height *0.5 );
+            console.log("fucky expressoin: " + overlap);
+
+            console.log("card[" + i + "]: (" + this.cards[i].sprite.x + ", " + this.cards[i].sprite.y + ")");
+            // this.cards[i].sprite.position.set(0,0);
+
+            // console.log("scaling at first : " + this.cards[i].sprite.scale.x);
+            // console.log("width at frist scaling: " + this.cards[i].sprite.width);
+
+            // this.cards[i].sprite.scale.x = this.cards[i].sprite.scale.y = 1.0;
+            // console.log("width at size 1.0: " + this.cards[i].sprite.width);
+
+
+            
+        }
+    }, 
 
     
 

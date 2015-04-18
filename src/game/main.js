@@ -186,6 +186,7 @@ game.createScene('Game', {
 
         var self = this;
         
+
         /* Add the playing field */
         this.field = new game.Sprite('field').addTo(this.stage);
         this.field.x = 0;
@@ -251,6 +252,9 @@ game.createScene('Game', {
 
         this.cardMenu.updateCards(this.playerHand);
         this.cardMenu.resetHiddenPosition();
+
+        // Testing the new card animations
+        this.cardMenu.showCards();
 
 
 
@@ -1378,8 +1382,34 @@ game.createScene('Game', {
             	    });
             });
         });
-    }
+    },
 
+    animYTop: 350,
+    animYBot: 600,
+    animYCenter: 480,
+    animYOffset: 0,
+
+    // Testing card animations
+    mousemove: function(mousedata) {
+        if(mousedata.global.y > this.animYTop && mousedata.global.y < this.animYBot){
+            // Get distance to center
+                // Get height from center --> this changes resize strength
+                this.animYOffset = Math.abs(mousedata.global.y - this.animYCenter);
+                // console.log("animYOffset: " + this.animYOffset);
+
+                // Get x coordinate --> this changes which card resizes
+
+                // reDraw the cards
+                this.cardMenu.reDraw(mousedata.global.x, this.animYOffset);
+        }
+        console.log("screenwidth: " + game.system.width);
+        // console.log("mouse (x,y): (" + mousedata.global.x + ", " + mousedata.global.y + ")");
+
+
+    }
+    // Todo for animations: 
+        // make sure cards are showing
+        // Handle arbitrary number of cards
 
 
 
