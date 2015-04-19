@@ -1,6 +1,9 @@
 game.module(
     'game.cardMenu'
-).body(function() {
+).require(
+'game.deck'
+)
+.body(function() {
 
 game.createClass('CardMenu', {
 
@@ -125,6 +128,19 @@ game.createClass('CardMenu', {
         }
     },
 
+	drawCard2: function(cardNumber)
+	{
+		this.hideCard(cardNumber);
+		this.cards[cardNumber] = this.deck.draw();
+		this.cards[cardNumber].sprite.setTexture(cards[cardNumber].name);
+		this.showCard(cardNumber);
+	},
+	
+	updateCard: function(newName, cardNumber)
+	{
+		this.cards[cardNumber].name = newName;
+		this.cards[cardNumber].sprite.setTexture(this.cards[cardNumber].name);
+	},
 
 	/* unused. Also may be buggy (doesn't reset positions when animating) */
 	hideCard: function(cardNumber)

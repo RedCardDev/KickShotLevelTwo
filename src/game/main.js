@@ -1261,19 +1261,32 @@ game.createScene('Game', {
 
     },
 	
+	replacePlayerCard: function (cardNumber)
+	{
+		_this.cardMenu.hideCards();
+		 _this.addTimer(game.CardHideSpeed, function() {
+			_this.playerHand.splice(cardNumber,1);
+			_this.drawCard("PLAYER");
+			for (cardNumber = 0; cardNumber < 6; cardNumber++)
+			{
+				_this.cardMenu.updateCard(_this.playerHand[cardNumber], cardNumber);
+				//_this.cardMenu.cards[cardNumber] = _this.playerHand[cardNumber];
+				//_this.cardMenu.cards[cardNumber].sprite.setTexture(_this.cardMenu.cards[cardNumber].name);
+			};
+			_this.cardMenu.showCards();
+        });
+	},
 
     // Draw card from the deck and put in hand
     // ToDo: handle empty deck
     // Todo: handle hand with <6 cards
     drawCard: function(whichplayer) {
         whichplayer = whichplayer.toUpperCase();
-
         switch(whichplayer) {
 
             case "PLAYER":
             case "PLAYER 1":
             case "HUMAN": 
-
                 if(this.playerHand.length <= 6){
                     this.playerHand.push( this.playerDeck.draw() );      
                 }else{
@@ -1382,6 +1395,7 @@ game.createScene('Game', {
         if(this.testPlayable(this.cardMenu.cards[0].name)){
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[0].name);
+			_this.replacePlayerCard(0);
         }
     },
     clickCard1: function(mousedata) { 
@@ -1389,6 +1403,7 @@ game.createScene('Game', {
         if(this.testPlayable(this.cardMenu.cards[1].name)){
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[1].name);
+			_this.replacePlayerCard(1);
         }
     },
     clickCard2: function(mousedata) { 
@@ -1396,6 +1411,7 @@ game.createScene('Game', {
         if(this.testPlayable(this.cardMenu.cards[2].name)){
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[2].name);
+			_this.replacePlayerCard(2);
         }
     },
     clickCard3: function(mousedata) { 
@@ -1403,6 +1419,7 @@ game.createScene('Game', {
         if(this.testPlayable(this.cardMenu.cards[3].name)){
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[3].name);
+			_this.replacePlayerCard(3);
         }
     },
     clickCard4: function(mousedata) { 
@@ -1410,6 +1427,7 @@ game.createScene('Game', {
         if(this.testPlayable(this.cardMenu.cards[4].name)){
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[4].name);
+			_this.replacePlayerCard(4);
         }
     },
     clickCard5: function(mousedata) { 
@@ -1417,6 +1435,7 @@ game.createScene('Game', {
         if(this.testPlayable(this.cardMenu.cards[5].name)){
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[5].name);
+			_this.replacePlayerCard(5);
         }
     },
 
