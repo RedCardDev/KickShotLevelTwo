@@ -24,7 +24,7 @@ game.createClass('CardMenu', {
 		this.skipButton.sprite.interactive = true;
 		this.skipButton.sprite.mouseover = this.mouseOverSkip.bind(this);
 		this.skipButton.sprite.mouseout = this.mouseOutSkip.bind(this);
-		this.skipButton.sprite.position.set( this.skipButton.sprite.y + 9, game.system.height/2 -140);
+		this.skipButton.sprite.position.set( -this.skipButton.sprite.width, game.system.height/2 -140);
         // Add a sprite to the game for each card
         for(var i = 0; i < this.cards.length; i++){
             this.cards[i].sprite = new game.Sprite(this.cards[i].name).addTo(game.scene.stage);
@@ -162,7 +162,7 @@ game.createClass('CardMenu', {
 
         /* make sure cards are in position to hide */
         this.resetShowingPosition();
-
+		game.scene.addTween(this.skipButton.sprite, {x: -this.skipButton.sprite.width}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out}).start();
         /* Slide cards off screen */
 		for(var i = 0; i < 6; i++) {
 			game.scene.addTween(this.cards[i].sprite, {y: game.system.height}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out,
@@ -191,7 +191,7 @@ game.createClass('CardMenu', {
 
         /* make sure cards are right below bottom of screen */
         this.resetHiddenPosition();
-
+		game.scene.addTween(this.skipButton.sprite, {x: 8}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out}).start();
         /* Slide cards into view */
 		for(var i = 0; i < 6; i++) {           
 			game.scene.addTween(this.cards[i].sprite, {y: game.system.height - 50}, game.CardHideSpeed, { easing: game.Tween.Easing.Back.Out,

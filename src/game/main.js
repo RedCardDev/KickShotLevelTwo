@@ -181,9 +181,9 @@ game.createScene('Game', {
     
 
     init: function() {
-
+		
         _this = this;
-
+		
         var self = this;
         
         /* Add the playing field */
@@ -193,7 +193,7 @@ game.createScene('Game', {
         this.field.interactive = true;
         this.field.click = this.field.tap = this.fieldClick.bind(this);
         this.addTween(this.field, {y: 0}, 600, {delay: 400, easing: game.Tween.Easing.Quadratic.Out}).start();
-
+		
         /* Add the ball */
         this.chip = new game.Sprite('chip-home').addTo(this.stage);
         this.chip.scale.x = this.chip.scale.y = 0.7;
