@@ -115,7 +115,7 @@ game.createClass('CardMenu', {
     /* Reset cards to the initial position (showing, on bottom of screen) */
     resetShowingPosition: function() {
         for(var i = 0; i < 6; i++) {
-            this.cards[i].sprite.scale.x = this.cards[i].sprite.y = 0.3;
+            this.cards[i].sprite.scale.x = this.cards[i].sprite.scale.y = 0.3;
             // this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - this.cards[i].sprite.height*0.1);
             this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height - 50); 
         }
@@ -123,7 +123,7 @@ game.createClass('CardMenu', {
 
     resetHiddenPosition: function() {
         for(var i = 0; i < 6; i++) {
-            this.cards[i].sprite.scale.x = this.cards[i].sprite.y = 0.3;
+            this.cards[i].sprite.scale.x = this.cards[i].sprite.scale.y = 0.3;
             this.cards[i].sprite.position.set( 30 + this.cards[i].sprite.width*0.25*i, game.system.height); 
         }
     },
@@ -133,7 +133,7 @@ game.createClass('CardMenu', {
 		this.hideCard(cardNumber);
 		this.cards[cardNumber] = this.deck.draw();
 		this.cards[cardNumber].sprite.setTexture(cards[cardNumber].name);
-		this.showCard(cardNumber);
+		// this.showCard(cardNumber);
 	},
 	
 	updateCard: function(newName, cardNumber)
