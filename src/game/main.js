@@ -565,6 +565,28 @@ game.createScene('Game', {
 		// 	console.log("-----end gamePhase 5-----");
 		// }
 
+        /* Human intercept */
+        if(this.gamePhase == 6){
+
+            /* Prevent re-entry */
+            _this.gamePhase = -1;
+            _this.disableInput();
+
+            _this.rollDice("Player 1", function() {
+
+                /* Success if neither dice rolls a '1' */ 
+                if(_this.dice.value1 != 1 && _this.dice.value2 != 1)
+                {
+                    _this.changePossession();
+                }
+                else
+                {
+                    _this.displayMessageSprite("Unsuccessful", function(){} )
+                }
+
+                _this.endTurn();
+            });
+        }
 
 
         /* Human goal kick (after blocking a goal attempt) */
@@ -1265,18 +1287,23 @@ game.createScene('Game', {
 	
 	replacePlayerCard: function (cardNumber)
 	{
-		_this.cardMenu.hideCards();
-		 _this.addTimer(game.CardHideSpeed, function() {
-			_this.playerHand.splice(cardNumber,1);
-			_this.drawCard("PLAYER");
-			for (cardNumber = 0; cardNumber < 6; cardNumber++)
-			{
-				_this.cardMenu.updateCard(_this.playerHand[cardNumber], cardNumber);
-				//_this.cardMenu.cards[cardNumber] = _this.playerHand[cardNumber];
-				//_this.cardMenu.cards[cardNumber].sprite.setTexture(_this.cardMenu.cards[cardNumber].name);
-			};
-			_this.cardMenu.showCards();
-        });
+		// _this.cardMenu.hideCards();
+		//  _this.addTimer(game.CardHideSpeed, function() {
+		// 	_this.playerHand.splice(cardNumber,1);
+		// 	_this.drawCard("PLAYER");
+		// 	for (cardNumber = 0; cardNumber < 6; cardNumber++)
+		// 	{
+		// 		_this.cardMenu.updateCard(_this.playerHand[cardNumber], cardNumber);
+		// 		//_this.cardMenu.cards[cardNumber] = _this.playerHand[cardNumber];
+		// 		//_this.cardMenu.cards[cardNumber].sprite.setTexture(_this.cardMenu.cards[cardNumber].name);
+		// 	};
+		// 	_this.cardMenu.showCards();
+  //       });
+
+        _this.playerHand.splice(cardNumber,1);
+        _this.drawCard("PLAYER");
+
+         _this.cardMenu.updateCards(_this.playerHand);
 	},
 
     // Draw card from the deck and put in hand
@@ -1398,6 +1425,7 @@ game.createScene('Game', {
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[0].name);
 			_this.replacePlayerCard(0);
+            _this.hideHand();
         }
     },
     clickCard1: function(mousedata) { 
@@ -1406,6 +1434,7 @@ game.createScene('Game', {
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[1].name);
 			_this.replacePlayerCard(1);
+            _this.hideHand();
         }
     },
     clickCard2: function(mousedata) { 
@@ -1414,6 +1443,7 @@ game.createScene('Game', {
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[2].name);
 			_this.replacePlayerCard(2);
+            _this.hideHand();
         }
     },
     clickCard3: function(mousedata) { 
@@ -1422,6 +1452,7 @@ game.createScene('Game', {
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[3].name);
 			_this.replacePlayerCard(3);
+            _this.hideHand();
         }
     },
     clickCard4: function(mousedata) { 
@@ -1430,6 +1461,7 @@ game.createScene('Game', {
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[4].name);
 			_this.replacePlayerCard(4);
+            _this.hideHand();
         }
     },
     clickCard5: function(mousedata) { 
@@ -1438,6 +1470,7 @@ game.createScene('Game', {
             // Todo: remove the card and draw another
             _this.playCard(_this.cardMenu.cards[5].name);
 			_this.replacePlayerCard(5);
+            _this.hideHand();
         }
     },
 
@@ -1477,6 +1510,7 @@ game.createScene('Game', {
         /* Update the text */
         _this.messageText.setText(messageString);
 
+        /* Must call this after changing text or it won't center (due to a bug in PIXI.js) */
         _this.messageText.updateTransform();
 
         /* Position message to left of screen */
@@ -1498,9 +1532,7 @@ game.createScene('Game', {
 	},
     
 
-	// Todo: manually click to roll the dice
-    // Todo: goal scoring on the rolloff
-    // Todo: have a goal kick (both die roll) after blocking a goal. uses your next turn
+	/* Player pass card */
     playerPass: function()
 	{
 		_this.dice.setPlayerPosition();
@@ -1511,27 +1543,13 @@ game.createScene('Game', {
 	},
 	
 
-    // Todo: fix to manually click to roll dice
+    /* Player intercept card */
 	playerIntercept: function()
 	{
 		_this.dice.setPlayerPosition();
         _this.showDice( function(){
-    		_this.rollDice("Player 1", function() {
-
-        		/* Success if neither dice rolls a '1' */ 
-                if(_this.dice.value1 != 1 && _this.dice.value2 != 1)
-                {
-                    _this.changePossession();
-                }
-                else
-                {
-                    _this.displayMessageSprite("Unsuccessful", function(){} )
-                }
-
-
-                // Todo: call this somewhere else
-        		_this.endTurn();
-            });
+            _this.gamePhase = 6;
+            _this.enableInput();
         });
 	},
 	
