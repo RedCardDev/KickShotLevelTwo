@@ -302,6 +302,8 @@ game.createScene('Game', {
 
         /* Message text */
         this.messageText = new game.BitmapText('longest block of text we need', { font: 'Foo' , align: 'center' }).addTo(this.stage);
+        // this.messageText = new game.Text('longest block of text we need', { font: 'Foo' , align: 'center' }).addTo(this.stage);
+
         this.messageText.visible = true;
         this.messageText.position.set(-this.messageText.textWidth, 585);
 
@@ -818,7 +820,7 @@ game.createScene('Game', {
                         self.updateBallTexture();
                         self.kickoff = true;
 
-                        _this.displayMessageSprite("             You go first!", function(){} );
+                        _this.displayMessageSprite("You go first!", function(){} );
 
                         // Wait a moment, then hide the dice
                         self.addTimer(1000, function() { 
@@ -840,7 +842,7 @@ game.createScene('Game', {
                         self.updateBallTexture();
                         self.kickoff = true;
 
-                        _this.displayMessageSprite("       Computer goes first!", function(){} );
+                        _this.displayMessageSprite("Computer goes first!", function(){} );
 
                         // Wait a moment, then hide the dice
                         self.addTimer(1000, function() { 
@@ -1007,7 +1009,7 @@ game.createScene('Game', {
                 }
                 else
                 {
-                    _this.displayMessageSprite("      Unsuccessful", function(){} );
+                    _this.displayMessageSprite("Unsuccessful", function(){} );
                 }
                 _this.endTurn();
             });
@@ -1109,7 +1111,7 @@ game.createScene('Game', {
     changePossession: function() {
         _this.possession = !_this.possession;
         _this.updateBallTexture();
-        _this.displayMessageSprite("          Turnover!", function(){} );
+        _this.displayMessageSprite("Turnover!", function(){} );
         // var self = this;
         // this.showMessage('Intercept', function() {
         //     self.possession = !self.possession;
@@ -1235,7 +1237,7 @@ game.createScene('Game', {
     /* Awards point, then resets ball for kickoff and ends turn */
 	scoreGoal: function() {
 
-        _this.displayMessageSprite("         Goal!", function() {
+        _this.displayMessageSprite("Goal!", function() {
 
             /* Award a point */
             if (_this.chipZone == 11) {
@@ -1472,11 +1474,14 @@ game.createScene('Game', {
         /* Set this global to show that a message is being displayed */
         _this.inMessage = true;
 
+        /* Update the text */
+        _this.messageText.setText(messageString);
+
+        _this.messageText.updateTransform();
+
         /* Position message to left of screen */
         _this.messageText.x = -_this.messageText.textWidth;
 
-        /* Update the text */
-        _this.messageText.setText(messageString);
 
         /* Show the message. Run callback() after message is done */
         _this.addTween(_this.messageText, {x: (game.system.width / 2 - _this.messageText.textWidth / 2)}, 600,
@@ -1520,7 +1525,7 @@ game.createScene('Game', {
                 }
                 else
                 {
-                    _this.displayMessageSprite("      Unsuccessful", function(){} )
+                    _this.displayMessageSprite("Unsuccessful", function(){} )
                 }
 
 
