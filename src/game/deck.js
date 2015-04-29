@@ -12,26 +12,26 @@ game.createClass('Deck', {
     // These arrays hold how many of each type of card will appear in the decks
     homeOffenseCards: [
         {name: "Pass_Home", count: 7},
-        {name: "Goal_Shot_Home_Left", count: 5},
-        {name: "Goal_Shot_Home_Right", count: 5},
+        {name: "Goal_Shot_Home_Left", count: 0},
+        {name: "Goal_Shot_Home_Right", count: 0},
     ],
 
     homeDefenseCards: [
         {name: "Intercept_Home", count: 5},
-        {name: "Goal_Blocked_Home_Left", count: 5},
-        {name: "Goal_Blocked_Home_Right", count: 5}
+        {name: "Goal_Blocked_Home_Left", count: 0},
+        {name: "Goal_Blocked_Home_Right", count: 0}
     ],
 
     awayOffenseCards: [
         {name: "Pass_Away", count: 7},
-        {name: "Goal_Shot_Away_Left", count: 5},
-        {name: "Goal_Shot_Away_Right", count: 5}
+        {name: "Goal_Shot_Away_Left", count: 0},
+        {name: "Goal_Shot_Away_Right", count: 0}
     ],
 
     awayDefenseCards: [
         {name: "Intercept_Away", count: 5},
-        {name: "Goal_Blocked_Away_Left", count: 5},
-        {name: "Goal_Blocked_Away_Right", count: 5}
+        {name: "Goal_Blocked_Away_Left", count: 0},
+        {name: "Goal_Blocked_Away_Right", count: 0}
     ],
 
 
