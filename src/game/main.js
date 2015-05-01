@@ -972,6 +972,15 @@ game.createScene('Game', {
         
         _this.showDice(function(){
             _this.rollDice("Player 2", function(){
+
+
+                if(Math.randomBetween(1, 10) > 5){
+                    // roll a 1
+                    console.log("modifying dice!");
+                    _this.dice.die2.setTexture('dice1');
+                    _this.dice.value2 = 1;
+                }
+
                 if(_this.dice.value1 == _this.dice.value2)
                 {
                     // Todo: message here for the +1 bonus
@@ -1023,6 +1032,15 @@ game.createScene('Game', {
         _this.showDice( function(){
             
             _this.rollDice("Player 2", function() {
+
+                // Kid friendly version
+                if(Math.randomBetween(1, 10) > 3){
+                    // roll a 1
+                    console.log("modifying dice!");
+                    _this.dice.die1.setTexture('dice1');
+                    _this.dice.value1 = 1;
+                }
+
 
                 /* Success if neither dice rolls a '1' */ 
                 if(_this.dice.value1 != 1 && _this.dice.value2 != 1)
