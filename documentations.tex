@@ -15,15 +15,25 @@
 \title{Documentation}
 \subtitle{KickShot}
 \date{\today}
-\author{
-Tessa
-}
+
 
 \begin{document}
 
 \maketitle
 
 \section*{main.js}
+These variables are included in the body of the main file.
+\begin{itemize}
+\item game.HUMAN
+\item game.AI
+\item game.GoalAttempt
+\item game.HumanScore
+\item game.AiScore
+\item game.MaxScore
+\item game.Doubles 
+\item game.DiceHideSpeed
+\item game.CardHideSpeed
+\end{itemize}
 \subsection*{createScene 'Main'}
 This section runs the start screen. 
 Variables: 
@@ -70,6 +80,7 @@ Variables include:
 \item chipZone 
 \item gamePhase 
 \item kickoff
+\item goalKick
 \item helpButton
 \item rules 
 \item backButton
@@ -86,11 +97,11 @@ This makes it so taps and clicks are used for input.
 \subsubsection*{disableInput()}
 This makes it so taps and clicks are ignored. 
 \subsubsection*{helpClick()}
-This brings out the rules for the game. 
+Brings out the rules for the game. 
 \subsubsection*{backClick()}
-This brings the player back to the main screen. 
+Brings the player back to the main screen. 
 \subsubsection*{hideRulesClick()}
-This removes the rules sprite. 
+Removes the rules sprite. 
 \subsubsection*{humanTurn()}
 This function checks whether kickoff is true, then sets the gamePhase
 to 1 if it is true, or  if it is not true, gamePhase is set to 3. 
@@ -105,6 +116,17 @@ functions based on that.
 This function performs a kickoff while it is the AI's turn. 
 The callback parameter is not used. 
 %is this correct?
+\subsubsection*{aiGoalKick()}
+This function handles moving the ball after the AI blocks a goal
+attempt.
+\subsubsection*{AiPass()}
+This function handles the AI passing and includes code to control how 
+frequently it succeeds. 
+\subsubsection*{AiIntercept()}
+This function handles the AI attempting to intercept the ball and includes code to control how 
+frequently it succeeds. 
+\subsubsection*{AiGoalShot(Direction)}
+This function handles the AI attempting a goal shot. 
 \subsubsection*{hideDice(callback)}
 This function hides the dice sprites and calls the callback
 parameter. 
@@ -144,43 +166,51 @@ Starts the other player's turn.
 \subsubsection*{scoreGoal()}
 Increments score for scoring player, resets the chip sprite and 
 chipZone. 
+\subsubsection*{replacePlayerCard(cardNumber)}
+Draws a card to replace a card in the player's hand.
 \subsubsection*{drawCard(whichPlayer)}
-
+Takes a card off whichPlayer's deck.
 \subsubsection*{printPlayerHand()}
-
+Logs the player's hand to the console.
 \subsubsection*{showMessage(msgType,after)}
-
+Shows a message on the screen.
 \subsubsection*{hideMessage(after)}
-
+Removes a message from the screen.
 \subsubsection*{gameOver()}
-
+Resets various variables.
 \subsubsection*{updateScore()}
-
+Changes the on screen score text to the current score. 
 \subsubsection*{pause(timeToPause)}
-
+Runs a timer for an inputted time. 
 \subsubsection*{testPlayable(cardName)}
-
+Returns a boolean depending on whether the card is playable. 
 \subsubsection*{skipClick(mouseData)}
-
+This function is called when the skip button is pressed, and ends the turn. 
 \subsubsection*{clickCard0(mouseData)}
-
+Checks whether the card is playable, and if so, plays it. 
 \subsubsection*{clickCard1(mouseData)}
-
+Checks whether the card is playable, and if so, plays it. 
 \subsubsection*{clickCard2(mouseData)}
-
+Checks whether the card is playable, and if so, plays it. 
 \subsubsection*{clickCard3(mouseData)}
-
+Checks whether the card is playable, and if so, plays it. 
 \subsubsection*{clickCard4(mouseData)}
-
+Checks whether the card is playable, and if so, plays it. 
 \subsubsection*{clickCard5(mouseData)}
-
+Checks whether the card is playable, and if so, plays it. 
+\subsubsection*{playCard(whichCard)}
+This function is called by the clickCard functions to call the 
+appropriate functions for the cards. 
 \subsubsection*{displayMessageSprite(messageString,callback)}
-
+This function displays a message on the screen, and then runs a callback
+function.
 \subsubsection*{playerPass()}
-
+This function sets up the dice and gamePhase for the player to roll for a pass. 
 \subsubsection*{playerIntercept()}
-
+This function sets up the dice and gamePhase for the player to roll for an intercept. 
 \subsubsection*{playerGoalShot(Direction)}
+This function handles a player's attempt at a goal shot. 
+
 
 \section*{dice.js}
 This file handles the dice, rolling, hiding and showing dice 
@@ -195,15 +225,27 @@ Variables include:
 \end{itemize}
 
 \subsubsection*{init()}
+This function adds the dice sprite objects, positions, and anchors. 
 \subsubsection*{update()}
+This changes the dice textures to random values. 
 \subsubsection*{show()}
+This moves the dice sprites onto the screen.
 \subsubsection*{hide()}
-\subsubsection*{roll()}
+This moves the dice sprites off of the screen. 
+\subsubsection*{roll(whichPlayer)}
+This sets the rolling variable to true and sets the dice positions to 
+match whichPlayer. 
 \subsubsection*{stopRoll()}
+Sets rolling to false. 
 \subsubsection*{setPlayerPosition()}
+Sets the dice positions to a position for the player. 
 \subsubsection*{setAiPosition()}
+Sets the dice positions to a position for the AI. 
 \subsubsection*{setBothPositions()}
+Sets the dice positions to a position for the player and the AI. 
 \subsubsection*{reset()}
+Sets the dice values and textures to one. 
+
 
 \section*{deck.js}
 This file handles the deck of cards, generation, shuffling, drawing
@@ -221,37 +263,73 @@ Variables include:
 \item awayDefenseCards
 \end{itemize}
 \subsubsection*{init(side)}
+Calls buildDeck for the side given. 
 \subsubsection*{buildDeck(side)}
+Builds the deck, top6Cards, offence, and defence lists for the side given.
 \subsubsection*{draw()}
-\subsubsection*{printDeck}
+Returns the top card from the deck. 
+\subsubsection*{printDeck()}
+Logs the deck to the console. 
 \subsubsection*{printSubDecks()}
+Prints the offence and defence sub-decks to the console. 
 \subsubsection*{shuffle(array)}
+Reorders the given array. 
+
+
 \section*{config.js}
 This file contains screen size, name, and version information. 
-\section*{cardMenu.js}
+\begin{itemize}
+\item name
+\item version
+\item width
+\item height 
+\item rotateScreen
+\item id
+\end{itemize}
+\
+
+section*{cardMenu.js}
 This file handles the card menu, hand, buttons, and layout. 
 \subsection*{createClass 'CardMenu'}
 Variables include:
 \begin{itemize}
 \item cards
 \item skipButton
+\item animating
 \end{itemize}
+
 \subsubsection*{init()}
+Moves the cards and skip button into place. 
 \subsubsection*{mouseOutCard(mousedata)}
+Moves and resizes a card when the mouse moves off of it. 
 \subsubsection*{mouseOverCard(mouseData)}
+Moves and resizes a card when the mouse moves over it. 
 \subsubsection*{mouseOverSkip(mousedata)}
+Changes the skip button sprite when the mouse moves over it. 
 \subsubsection*{mouseOutSkip(mousedata)}
+Changes the skip button sprite when the mouse moves off of it. 
 \subsubsection*{updateCards(cardsInHand)}
+Updates the card sprites to match the cards in the hand. 
 \subsubsection*{hideCard(cardNumber)}
+\subsubsection*{resetShowingPosition()}
+Resets the cards' display positions.
+\subsubsection*{resetHiddenPosition()}
+Resets the cards' hidden positions.  
+\subsubsection*{drawCard2(cardNumber)}
+Draws a new card and updates the texture.
+\subsubsection*{updateCard(newName,cardNumber)}
+Sets the cards to the correct sprites. 
+\subsubsection*{hideCard(cardNumber)}
+Hides the indicated card.
 \subsubsection*{hideCards()}
+Hides all the cards. 
 \subsubsection*{showCard(cardNumber)}
+Shows a card. 
 \subsubsection*{showCards()}
+Shows all the cards.
 \subsubsection*{isPlayable(cardName,currentPlayer,currentPossession,
 ballZone)}
-\subsubsection*{show()}
-Does nothing.
-\subsubsection*{shide()}
-Does nothing.
+Checks to see if a cards is playable. 
 \subsubsection*{enlargeCard()}
 Does nothing
 \subsubsection*{printCards()}
@@ -259,5 +337,60 @@ Prints card number and name to the console.
 
 \section*{assests.js}
 This file adds all of the sprites used in the game. 
-
+These include:
+\begin{itemize}
+\item raccon
+\item hare
+\item jaguar
+\item weasel
+\item lion
+\item dog 
+\item crocodile 
+\item elephant 
+\item panda 
+\item goat 
+\item field 
+\item chip-home 
+\item chip-away 
+\item title 
+\item play 
+\item play-click 
+\item web
+\item web-click 
+\item help 
+\item help-click 
+\item close 
+\item dice1 
+\item dice2 
+\item dice3 
+\item dice4 
+\item dice5 
+\item dice6 
+\item Goal\_home
+\item Goal\_away 
+\item GoalBlock\_home 
+\item GoalBlock\_away
+\item Intercept\_home 
+\item Intercept\_away 
+\item GoalShot\_home 
+\item GoalShot\_away 
+\item End\_home 
+\item End\_away 
+\item Direct\_Free\_Kick 
+\item Goal\_Blocked\_Away\_Left
+\item Goal\_Blocked\_Away\_Right 
+\item Goal\_Blocked\_Home\_Left 
+\item Goal\_Blocked\_Home\_Right 
+\item Goal\_Shot\_Away\_Left 
+\item Goal\_Shot\_Away\_Right 
+\item Goal\_Shot\_Home\_Left
+\item Goal\_Show\_Home\_Right
+\item Intercept\_Away
+\item Intercept\_Home 
+\item Pass\_Away
+\item Pass\_Home 
+\item rules 
+\item skipover
+\item skip 
+\end{itemize}
 \end{document}
